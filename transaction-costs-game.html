@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Make-or-Buy Decision | ODCE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --turquoise: #00C1D4;
+      --blue: #143AFF;
+      --violet: #7200FE;
+      --mint: #5AFFC5;
+      --red: #FF4F4F;
+      --orange: #FF7E15;
+      --yellow: #FFDE36;
+      --cool-gray: #D0D0CE;
+      --black: #000000;
+      --white: #FFFFFF;
+      --bg: #F0F9FA;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px 56px;
+    }
+
+    #app { width: 100%; max-width: 660px; }
+
+    /* ── LOGO ── */
+    .logo-wrap {
+      margin-bottom: 22px;
+    }
+    .logo-wrap svg {
+      height: 44px;
+      width: auto;
+      display: block;
+    }
+    /* strip the Inkscape transform so the logo renders at its natural viewBox */
+    .logo-wrap svg g { transform: none !important; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      padding: 38px 44px 44px;
+      position: relative;
+      overflow: hidden;
+      border-top: 5px solid var(--turquoise);
+      box-shadow: 0 4px 28px rgba(0,193,212,0.10), 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    /* ── CIRCUIT DECO ── */
+    .circuit-deco {
+      position: absolute;
+      top: 0; right: 0;
+      width: 200px; height: 170px;
+      pointer-events: none;
+      opacity: 0.055;
+    }
+
+    /* ── ACCENT ── */
+    .accent-line {
+      height: 3px;
+      background: linear-gradient(90deg, var(--turquoise) 55%, transparent);
+      margin-bottom: 28px;
+    }
+    .divider { height: 1px; background: var(--cool-gray); margin: 24px 0; }
+
+    /* ── PROGRESS ── */
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+    }
+    .progress-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--turquoise);
+    }
+    .progress-score {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; color: var(--blue);
+    }
+    .progress-track { height: 3px; background: var(--cool-gray); margin-bottom: 28px; }
+    .progress-fill  { height: 100%; background: var(--turquoise); transition: width 0.4s ease; }
+
+    /* ── TYPE ── */
+    h1 { font-size: 30px; font-weight: 700; color: var(--black); line-height: 1.15; margin-bottom: 10px; letter-spacing: -0.3px; }
+    h2 { font-size: 21px; font-weight: 700; color: var(--black); line-height: 1.25; margin-bottom: 14px; }
+    .subtitle { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 28px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--turquoise); margin-bottom: 6px; }
+
+    /* ── CHIPS ── */
+    .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+    .chip { background: var(--bg); border: 1.5px solid var(--cool-gray); padding: 6px 14px; font-size: 12px; font-weight: 600; color: #555; }
+    .chip strong { color: var(--blue); }
+
+    /* ── SCENARIO ── */
+    .scenario-box {
+      background: var(--bg);
+      border-left: 4px solid var(--turquoise);
+      padding: 16px 20px;
+      font-size: 14px; color: #333; line-height: 1.75;
+      margin-bottom: 24px;
+    }
+    .scenario-box::before {
+      content: 'SCENARIO';
+      display: block;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 2.5px; color: var(--turquoise);
+      margin-bottom: 6px;
+    }
+
+    .question-prompt { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 16px; }
+
+    /* ── OPTIONS ── */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+
+    .option-btn {
+      border: 2px solid var(--cool-gray);
+      background: var(--white);
+      padding: 15px 18px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13.5px; font-weight: 500; color: #222;
+      cursor: pointer; text-align: left;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      line-height: 1.55;
+      display: flex; align-items: flex-start; gap: 14px;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--turquoise); background: #f0fdfe; transform: translateX(3px); }
+
+    .option-letter {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; min-width: 28px;
+      border: 2px solid var(--cool-gray);
+      font-size: 12px; font-weight: 700; color: #666;
+      transition: all 0.15s; margin-top: 1px; flex-shrink: 0;
+    }
+    .option-btn:hover:not(:disabled) .option-letter { border-color: var(--turquoise); color: var(--turquoise); }
+
+    .option-btn.correct { border-color: var(--mint); background: #edfff8; }
+    .option-btn.correct .option-letter { background: var(--mint); border-color: var(--mint); color: #005a44; }
+    .option-btn.partial { border-color: var(--yellow); background: #fffce6; }
+    .option-btn.partial .option-letter { background: var(--yellow); border-color: var(--yellow); color: #6b4e00; }
+    .option-btn.wrong   { border-color: var(--red); background: #fff2f2; }
+    .option-btn.wrong .option-letter   { background: var(--red); border-color: var(--red); color: var(--white); }
+    .option-btn.dimmed  { opacity: 0.38; }
+    .option-btn:disabled { cursor: default; transform: none !important; }
+
+    /* ── FEEDBACK ── */
+    .feedback-panel { margin-top: 20px; padding: 16px 20px; border-left: 4px solid var(--turquoise); background: var(--bg); display: none; }
+    .feedback-panel.visible { display: block; }
+    .feedback-panel.correct { border-color: var(--mint); }
+    .feedback-panel.partial { border-color: var(--yellow); }
+    .feedback-panel.wrong   { border-color: var(--red); }
+    .feedback-pts { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+    .feedback-panel.correct .feedback-pts { color: #00704a; }
+    .feedback-panel.partial .feedback-pts { color: #7a5e00; }
+    .feedback-panel.wrong   .feedback-pts { color: #a00; }
+    .feedback-text { font-size: 13px; color: #444; line-height: 1.7; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: block; width: 100%; margin-top: 22px;
+      background: var(--turquoise); color: var(--white); border: none;
+      padding: 16px 28px;
+      font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.5px;
+      transition: background 0.15s, transform 0.1s; text-align: center;
+    }
+    .btn-primary:hover { background: #009fb0; transform: translateY(-1px); }
+    .btn-outline {
+      display: block; width: 100%; margin-top: 10px;
+      background: transparent; color: var(--blue);
+      border: 2px solid var(--blue);
+      padding: 14px 28px;
+      font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.5px;
+      transition: all 0.15s; text-align: center;
+    }
+    .btn-outline:hover { background: var(--blue); color: var(--white); }
+
+    /* ── INPUT ── */
+    .field-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #555; margin-bottom: 6px; margin-top: 24px; }
+    .input-field { width: 100%; border: 2px solid var(--cool-gray); background: var(--white); padding: 14px 16px; font-family: 'Poppins', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s; }
+    .input-field:focus { border-color: var(--turquoise); }
+
+    /* ── RESULTS ── */
+    .score-display { text-align: center; padding: 28px 0 20px; border-bottom: 1px solid var(--cool-gray); margin-bottom: 24px; }
+    .score-number { font-size: 72px; font-weight: 700; color: var(--blue); line-height: 1; }
+    .score-denom  { font-size: 24px; font-weight: 300; color: var(--cool-gray); }
+    .score-pts-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #888; text-transform: uppercase; margin-top: 4px; }
+
+    .tier-row { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-left: 5px solid var(--turquoise); background: var(--bg); margin-bottom: 24px; }
+    .tier-row.expert       { border-color: var(--mint); }
+    .tier-row.practitioner { border-color: var(--yellow); }
+    .tier-row.apprentice   { border-color: var(--red); }
+    .tier-icon { font-size: 26px; line-height: 1; }
+    .tier-name { font-size: 15px; font-weight: 700; color: var(--black); }
+    .tier-desc { font-size: 13px; color: #555; margin-top: 2px; }
+
+    .breakdown-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+    .breakdown-pts { font-weight: 700; color: var(--blue); }
+
+    /* ── LEADERBOARD ── */
+    .lb-item { display: flex; align-items: center; padding: 12px 16px; border-left: 4px solid transparent; margin-bottom: 6px; background: var(--bg); font-size: 14px; }
+    .lb-item.gold   { border-color: var(--yellow); background: #fffce6; }
+    .lb-item.silver { border-color: var(--cool-gray); }
+    .lb-item.bronze { border-color: var(--orange); background: #fff5ed; }
+    .lb-item.me     { border-color: var(--turquoise); background: #f0fdfe; }
+    .lb-rank  { width: 32px; font-weight: 700; color: #888; flex-shrink: 0; }
+    .lb-name  { flex: 1; font-weight: 600; }
+    .lb-score { font-weight: 700; color: var(--blue); }
+    .lb-empty { color: #aaa; font-size: 13px; padding: 20px 0; text-align: center; }
+
+    /* ── HOST ── */
+    .host-banner { background: var(--blue); color: var(--white); padding: 20px 24px; margin-bottom: 24px; }
+    .host-banner h2 { color: var(--white); font-size: 18px; }
+    .host-banner p  { font-size: 12px; opacity: 0.7; margin-top: 4px; letter-spacing: 0.5px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-box { background: var(--white); border-top: 3px solid var(--turquoise); padding: 14px 12px; text-align: center; }
+    .stat-val   { font-size: 28px; font-weight: 700; color: var(--blue); }
+    .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-top: 2px; }
+    .host-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+    .host-btn { background: var(--bg); border: 2px solid var(--cool-gray); padding: 10px 14px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: #333; transition: all 0.15s; text-align: center; }
+    .host-btn:hover { background: var(--turquoise); color: var(--white); border-color: var(--turquoise); }
+    .host-btn.danger:hover { background: var(--red); border-color: var(--red); color: var(--white); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--turquoise); margin-bottom: 12px; }
+
+    @media (max-width: 480px) {
+      .card { padding: 24px 20px 28px; }
+      h1 { font-size: 24px; }
+      .score-number { font-size: 56px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ── INLINED LOGO SVGS ─────────────────────────────────────────────────────────
+// Logo_solid.svg — formal use (blue fill shape + blue ODCE lettering)
+const LOGO_SOLID = `<svg
+   width="96.605103mm" height="82.199448mm"
+   viewBox="0 0 96.605103 82.199448"
+   xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(117.23172,-149.41432)">
+    <path style="fill:#143aff;stroke:#000000;stroke-width:0.264583"
+      d="m -20.758898,149.5762 a 0.02963265,0.02963265 0 0 1 -0.02963,0.0296 0.02963265,0.02963265 0 0 1 -0.02963,-0.0296 0.02963265,0.02963265 0 0 1 0.02963,-0.0296 0.02963265,0.02963265 0 0 1 0.02963,0.0296 z"/>
+    <path style="fill:none;fill-opacity:1;stroke:#143aff;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -116.43796,230.55898 59.621691,0.26104 h 6.8089 l 27.00638,-23.65599 v -50.64865 l -38.93207,0.22247 -54.504901,21.22023 z"
+      sodipodi:nodetypes="cccccccc"/>
+    <g aria-label="ODCE"
+       style="font-weight:bold;font-size:19.7556px;line-height:0.8;font-family:'BC Novatica TEST';letter-spacing:-0.5715px;fill:#143aff;stroke-width:0.539294;stroke-linecap:round">
+      <path d="m -102.06223,223.39662 c 4.504274,0 7.270058,-2.6275 7.270058,-7.32933 0,-4.70183 -2.765784,-7.32933 -7.270058,-7.32933 -4.52404,0 -7.28982,2.6275 -7.28982,7.32933 0,4.70183 2.76578,7.32933 7.28982,7.32933 z m 0,-3.14114 c -2.23239,0 -3.65479,-1.56069 -3.65479,-4.18819 0,-2.62749 1.4224,-4.18819 3.65479,-4.18819 2.212624,0 3.635027,1.5607 3.635027,4.18819 0,2.6275 -1.422403,4.18819 -3.635027,4.18819 z"/>
+      <path d="m -93.783207,223.12004 h 6.183503 c 3.753564,0 6.795927,-1.89654 6.795927,-7.05275 0,-5.15621 -3.042363,-7.05275 -6.795927,-7.05275 h -6.183503 z m 5.294501,-3.12138 h -1.857026 v -7.86273 h 1.857026 c 3.239919,0 4.049898,1.34338 4.049898,3.93136 0,2.58799 -0.809979,3.93137 -4.049898,3.93137 z"/>
+      <path d="m -73.05818,223.39662 c 3.101629,0 6.440326,-1.81752 6.637882,-5.84766 h -3.654786 c -0.217312,1.85703 -1.698982,2.70652 -2.983096,2.70652 -2.15336,0 -3.496741,-1.44216 -3.496741,-4.20794 0,-2.72628 1.343381,-4.16844 3.496741,-4.16844 1.284114,0 2.78554,0.82974 2.983096,2.70652 h 3.654786 c -0.197556,-4.0499 -3.536253,-5.84766 -6.637882,-5.84766 -4.286965,0 -7.131771,2.54848 -7.131771,7.30958 0,4.80061 2.844806,7.34908 7.131771,7.34908 z"/>
+      <path d="m -65.411352,223.12004 h 10.806313 v -3.12138 h -7.368838 v -2.37068 h 6.381058 v -3.12138 h -6.381058 v -2.37067 h 7.27006 v -3.12139 h -10.707535 z"/>
+    </g>
+  </g>
+</svg>`;
+
+// scribble_logo.svg — expressive use (turquoise outline + blue ODCE lettering + hand-drawn strokes)
+const LOGO_SCRIBBLE = `<svg
+   width="102.91817mm" height="83.378166mm"
+   viewBox="0 0 102.91817 83.378166"
+   xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(122.64985,-35.959212)">
+    <path style="fill:none;fill-opacity:1;stroke:#00c1d4;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -117.48943,114.79454 59.621691,0.26104 h 6.8089 l 27.00638,-23.655993 v -50.64865 l -38.93207,0.22247 -54.504901,21.22023 z"
+      sodipodi:nodetypes="cccccccc"/>
+    <path style="fill:none;stroke:#143aff;stroke-width:0.463021;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -118.89558,119.10125 -0.02,-1.03159 0.0762,-0.94964 -0.0146,-1.03808 -0.0127,-0.98932 0.002,-0.98069 0.0227,-0.98525 -0.02,-1.04546 0.0401,-0.94595 0.003,-1.01192 0.0224,-0.98688 0.005,-1.00747 0.006,-0.99817 -0.0241,-1.07133 -0.0193,-0.96793 0.0365,-0.95223 0.005,-0.99728 0.005,-0.99749 0.009,-0.99553 0.10886,-0.99596 -0.0131,-1.088176 0.009,-0.908494 0.004,-0.998478 0.0631,-0.975124 -0.003,-1.032829 -0.002,-0.993703 -0.01,-1.010129 -0.0146,-0.998053 -0.007,-1.02312 -0.008,-0.961908 -0.003,-0.991852 -0.0135,-1.056656 0.0683,-0.914314 0.0134,-1.006033 0.0268,-0.989411 0.0613,-1.012677 -0.0304,-1.04519 0.0178,-0.945958 -0.027,-1.098007 0.002,-0.901898 0.042,-1.002779 -0.0253,-1.020643 0.0255,-0.953688 -0.0211,-1.034667 -0.0126,-0.988116 -0.0355,-1.068433 -0.0238,-0.953572 -0.0276,-1.027406 -0.0124,-0.981886 -0.008,-1.041746 -0.004,-0.948431 -3.3e-4,-0.952997 0.0956,-0.979668 0.0278,-1.011884 -0.0271,-1.116057 -0.0161,-0.890921 0.008,-0.9758 -0.0217,-1.019261 0.0337,-0.97811 -0.0271,-1.0139 0.0266,-0.984773 -0.0484,-1.014637 -0.0624,-1.022243 0.003,-0.9518"/>
+    <g aria-label="ODCE"
+       style="font-weight:bold;font-size:19.7556px;line-height:0.8;font-family:'BC Novatica TEST';letter-spacing:-0.5715px;fill:#143aff;stroke-width:0.539294;stroke-linecap:round">
+      <path d="m -103.11369,107.63216 c 4.504281,0 7.270065,-2.62749 7.270065,-7.32933 0,-4.701829 -2.765784,-7.329324 -7.270065,-7.329324 -4.52403,0 -7.28981,2.627495 -7.28981,7.329324 0,4.70184 2.76578,7.32933 7.28981,7.32933 z m 0,-3.14114 c -2.23238,0 -3.65478,-1.56069 -3.65478,-4.18819 0,-2.627491 1.4224,-4.188183 3.65478,-4.188183 2.21263,0 3.635035,1.560692 3.635035,4.188183 0,2.6275 -1.422405,4.18819 -3.635035,4.18819 z"/>
+      <path d="m -94.834659,107.35558 h 6.183503 c 3.753564,0 6.795926,-1.89653 6.795926,-7.05275 0,-5.156208 -3.042362,-7.052745 -6.795926,-7.052745 h -6.183503 z m 5.294501,-3.12138 h -1.857027 v -7.86273 h 1.857027 c 3.239918,0 4.049898,1.34338 4.049898,3.93136 0,2.58799 -0.80998,3.93137 -4.049898,3.93137 z"/>
+      <path d="m -74.109633,107.63216 c 3.10163,0 6.440326,-1.81751 6.637882,-5.84766 h -3.654786 c -0.217312,1.85703 -1.698982,2.70652 -2.983096,2.70652 -2.15336,0 -3.496741,-1.44216 -3.496741,-4.20794 0,-2.726274 1.343381,-4.168433 3.496741,-4.168433 1.284114,0 2.78554,0.829735 2.983096,2.706517 h 3.654786 c -0.197556,-4.049898 -3.536252,-5.847658 -6.637882,-5.847658 -4.286965,0 -7.131771,2.548473 -7.131771,7.309574 0,4.80061 2.844806,7.34908 7.131771,7.34908 z"/>
+      <path d="m -66.462804,107.35558 h 10.806313 v -3.12138 h -7.368839 v -2.37067 h 6.381059 V 98.742142 H -63.02533 V 96.37147 h 7.270061 v -3.121385 h -10.707535 z"/>
+    </g>
+    <path style="fill:none;stroke:#143aff;stroke-width:0.444856;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -25.941759,36.181637 -0.002,0.953659 0.114804,1.052838 0.004,0.943401 0.0077,1.004942 0.02501,1.015279 0.04934,1.009321 -0.0024,0.936395 0.07148,1.057191 0.02505,0.97609 0.04885,1.007339 0.02763,0.982056 0.02876,0.993735 -0.007,0.905928 0.0013,1.03083 0.06728,1.049584 0.02724,0.993807 0.02821,0.994571 0.03207,0.996896 0.152352,0.996287 0.0057,0.883528 0.03422,1.10165 0.0257,0.993365 0.09726,1.021475 0.01701,0.951622 0.01939,0.999259 0.01014,0.979542 0.0044,0.994083 0.01409,0.964058 0.01281,1.037441 0.01811,1.001542 0.0053,0.923725 0.105007,1.09465 0.03693,0.983912 0.05308,1.004405 0.09423,0.976608 -0.01584,0.938317 0.04254,1.05612 -0.01184,0.874464 0.02403,1.10905 0.07102,0.98846 -0.01001,0.967971 0.05121,1.046764 -0.0052,0.950948 0.0053,1.005502 -0.02217,0.90938 -0.0073,1.046726 -0.01181,0.9585 0.0073,1.013214 0.0124,0.941566 0.01756,1.053563 0.02163,1.048099 0.135837,1.016104 0.05081,0.980124 -0.01731,0.854683 -0.0056,1.121248 0.02522,1.020045 -0.01211,0.969639 0.05436,1.01685 -0.03604,0.978777 0.02642,1.006447 -0.06504,-0.0149"/>
+    <path style="fill:#143aff;stroke:#143aff;stroke-width:0.443719;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -55.694159,119.11552 0.701235,-0.71355 0.812107,-0.65053 0.669758,-0.6695 0.706235,-0.69023 0.727814,-0.67302 0.753476,-0.6589 0.696125,-0.71124 0.767681,-0.64734 0.715002,-0.658 0.75353,-0.65916 0.726429,-0.66582 0.732386,-0.6713 0.69575,-0.75908 0.678071,-0.69901 0.760481,-0.65712 0.713088,-0.64909 0.734725,-0.66803 0.738086,-0.66521 0.857496,-0.66263 0.647746,-0.71412 0.699046,-0.62707 0.732145,-0.66444 0.806332,-0.64011 0.701455,-0.66077 0.724292,-0.67537 0.716769,-0.69168 0.708537,-0.68927 0.721705,-0.72201 0.700777,-0.659213 0.729522,-0.672419 0.71713,-0.743323 0.789118,-0.615294 0.718897,-0.624134 0.764449,-0.642734 0.801166,-0.658966 0.659572,-0.688855 0.748193,-0.651745 0.694692,-0.774069 0.701931,-0.624476 0.789208,-0.66713 0.678339,-0.669909 0.770047,-0.641621 0.705442,-0.684413 0.724249,-0.677374 0.69822,-0.761955 0.698352,-0.669737 0.722437,-0.712606 0.74947,-0.654749 0.781907,-0.665103"/>
+    <path style="fill:none;stroke:#143aff;stroke-width:0.463021;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -120.75309,114.51041 0.97136,-0.017 1.09151,0.0319 0.90491,-0.0107 0.9971,-4.3e-4 1.00963,0.0168 1.01564,0.0288 0.95233,-0.0196 1.05545,0.0334 0.95803,0.0177 1.01436,0.029 0.97768,0.0186 0.99564,0.0183 0.96512,-0.0555 1.00088,-0.0239 1.05113,0.0221 0.96343,0.0212 0.99567,0.0219 0.99812,0.0239 1.09521,0.0254 0.87525,-0.0671 1.018341,0.0259 0.989806,0.0245 1.054454,0.047 0.929513,0.0103 0.996318,0.0157 0.987342,0.003 0.99002,0.003 1.002973,-0.0218 0.994284,0.0147 0.999936,0.0206 0.984279,-0.0386 1.078016,0.0464 0.941557,0.0358 1.008247,0.0451 1.029701,0.0294 0.905259,-0.0183 1.042953,0.0361 0.950825,-0.0655 1.025225,0.0336 1.035299,0.0274 0.929473,0.004 1.045255,0.0499 0.949174,0.0113 1.002797,0.0221 0.971796,-0.049 1.007186,-0.002 0.991407,-0.0312 1.011031,-0.0131 1.000494,-0.0559 1.002503,-0.003 1.000783,0.0434 1.090051,0.0609 0.934458,0.0435 0.942551,-0.0719 1.009335,0.0427 1.018773,0.0636 0.966774,0.0401 1.048312,0.0606 0.942676,0.0425 1.047026,0.0567 0.936654,0.0383 0.977997,0.0141 1.043502,0.0614 0.971843,0.0516 1.002988,0.0588 1.004736,0.0639 1.026878,0.0592 0.907142,-0.0273 1.025658,0.0567 0.969139,0.0163 1.080517,0.0741 0.990233,0.079"/>
+    <path style="fill:none;stroke:#143aff;stroke-width:0.463021;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -20.813739,40.771617 -1.020484,-0.04661 -0.900515,0.0024 -1.086858,-0.03979 -0.994923,-0.02987 -0.98236,-0.01259 -0.976212,-3.92e-4 -1.039423,-0.04879 -0.936742,0.0042 -1.03367,-0.01122 -0.977481,-1.23e-4 -1.014057,-0.01051 -0.996194,-0.01094 -1.026716,-0.0847 -0.991829,-0.05289 -0.941422,-0.0064 -1.028374,-0.0067 -0.996115,-0.0064 -0.993673,-0.0044 -0.896532,-0.003 -1.116523,-0.09443 -0.975286,-0.0018 -1.001881,-0.0029 -0.937256,0.01945 -1.061708,-0.01675 -0.99569,-0.01211 -1.00458,-0.0245 -1.002211,-0.02433 -0.989296,-0.04924 -0.998824,-0.0119 -0.992081,-0.0059 -1.007544,-0.06486 -0.91608,0.02114 -1.049274,0.01199 -0.982934,0.01967 -0.961243,0.0037 -1.086281,-0.04362 -0.950221,0.01018 -1.040436,-0.09074 -0.970523,0.01046 -0.955887,0.0049 -1.062039,-0.01737 -0.947411,0.02762 -1.041131,-0.01083 -0.989483,-4.66e-4 -1.019977,-0.07093 -0.989287,-0.0183 -1.002299,-0.04372 -0.985808,-0.01807 -0.994962,-0.05253 -0.999508,0.01985 -0.992375,0.0784 -0.893707,0.09492 -1.048846,0.06199"/>
+    <path style="fill:none;stroke:#143aff;stroke-width:0.463021;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+      d="m -122.41834,64.503557 0.90423,-0.405414 1.00905,-0.360274 0.85283,-0.37504 0.91808,-0.391681 0.93399,-0.374977 0.94813,-0.359996 0.89203,-0.402737 0.97221,-0.358435 0.90157,-0.35975 0.94765,-0.35969 0.91742,-0.364648 0.92943,-0.369774 0.89879,-0.443211 0.9042,-0.412409 0.96621,-0.368748 0.90241,-0.355919 0.93046,-0.366697 0.93304,-0.364425 1.03128,-0.36207 0.82524,-0.418961 0.91967,-0.357251 0.92654,-0.362961 0.99017,-0.342154 0.88117,-0.36052 0.92649,-0.374007 0.919139,-0.386564 0.916348,-0.387609 0.928597,-0.414505 0.911933,-0.371855 0.930538,-0.371317 0.917653,-0.429414 0.988902,-0.340506 0.89333,-0.332831 0.949951,-0.341943 0.976,-0.353916 0.850584,-0.387275 0.959492,-0.359209 0.89239,-0.450657 0.924964,-0.354319 0.973926,-0.362966 0.871339,-0.371224 0.970583,-0.346247 0.896794,-0.372623 0.931162,-0.373355 0.904657,-0.442772 0.911874,-0.394883 0.914172,-0.426022 0.923161,-0.405711 0.920907,-0.445392 0.908416,-0.385978 0.926206,-0.344453 1.032594,-0.330514 0.893853,-0.315942 0.890058,-0.452679 0.908778,-0.343667 0.95966,-0.331601 0.91796,-0.348713 0.988662,-0.335446 0.895503,-0.336811 0.988503,-0.339836 0.887884,-0.34149 0.916929,-0.38521 0.971811,-0.33964 0.921315,-0.3381 0.947086,-0.338869 0.95129,-0.332811 0.975033,-0.337907 0.854656,-0.421158 0.940722,-0.344819 0.911451,-0.388344"/>
+  </g>
+</svg>`;
+
+// ── GAME DATA ─────────────────────────────────────────────────────────────────
+const GAME = {
+  title: "The Make-or-Buy Decision",
+  subtitle: "Transaction Cost Theory",
+  intro: "You're the Head of Innovation at NovaTech GmbH. Your CEO has put four critical sourcing decisions on your desk — each one tests your ability to read transaction costs correctly. Choose wisely.",
+  questions: [
+    {
+      title: "The Standard Software Module",
+      scenario: "NovaTech needs a new inventory management module. It's a standard solution — dozens of SaaS vendors offer virtually identical products, integration is straightforward, and contract terms are short. Your dev team is busy with core product work.",
+      question: "What do you recommend?",
+      options: [
+        { letter:"A", text:"Buy off-the-shelf from one of the established vendors — low specificity, many partners, minimal uncertainty.", points:3 },
+        { letter:"B", text:"Build it in-house to keep full control and avoid vendor lock-in.", points:0 },
+        { letter:"C", text:"Start a long-term exclusive partnership with one vendor to get a custom version.", points:1 }
+      ],
+      feedback: [
+        { type:"correct", pts:"✓ +3 pts — Correct!",            text:"Textbook low-cost transaction: nonspecific goods, many exchange partners, low uncertainty. Buying is clearly optimal — no need for vertical integration." },
+        { type:"wrong",   pts:"✗ 0 pts — Not quite.",            text:"In-house development only makes sense when assets are highly specific or few partners exist. Here, the market offers plenty of identical alternatives — building wastes resources." },
+        { type:"partial", pts:"~ +1 pt — Defensible, but risky.",text:"A long-term exclusive deal introduces asset specificity and bilateral dependency where none is needed. It raises transaction costs unnecessarily." }
+      ]
+    },
+    {
+      title: "The Proprietary Sensor",
+      scenario: "NovaTech is developing a breakthrough IoT device that needs a custom-engineered sensor — one that embeds your proprietary calibration algorithm. Only two vendors in Europe have the engineering capabilities. Once the relationship starts, both sides must make significant dedicated investments.",
+      question: "How do you structure this?",
+      options: [
+        { letter:"A", text:"Outsource to the cheaper of the two vendors on a short-term contract — keep it flexible.", points:0 },
+        { letter:"B", text:"Develop the sensor fully in-house or form a long-term structured partnership with tight contracts.", points:3 },
+        { letter:"C", text:"Let the two vendors compete in an open bid each year to keep prices down.", points:1 }
+      ],
+      feedback: [
+        { type:"wrong",   pts:"✗ 0 pts — That's risky.",    text:"Short-term contracts with high asset specificity create hold-up problems. After dedicated investments are made, either side can exploit the other. You need safeguards, not flexibility." },
+        { type:"correct", pts:"✓ +3 pts — Excellent!",      text:"High asset specificity + few partners + uncertainty = high transaction costs. Internalising or using tight long-term contracts with safeguards is exactly what TCT prescribes." },
+        { type:"partial", pts:"~ +1 pt — Partially right.", text:"Annual bidding assumes a competitive market — but with only two qualified vendors and high switching costs, this strategy gives you little real leverage." }
+      ]
+    },
+    {
+      title: "The Supply Chain Crisis",
+      scenario: "A critical component supplier has become unreliable after a geopolitical shock. Lead times tripled, quality is inconsistent, and three alternative suppliers have entered the market in the past year. Your procurement team is overwhelmed with firefighting.",
+      question: "What's your strategic response?",
+      options: [
+        { letter:"A", text:"Immediately pursue vertical integration — acquire or build the capability in-house to eliminate external dependency.", points:1 },
+        { letter:"B", text:"Qualify one or two of the new alternative suppliers and shift volume — use the newly competitive market.", points:3 },
+        { letter:"C", text:"Stay with the current supplier but renegotiate aggressively for price concessions.", points:0 }
+      ],
+      feedback: [
+        { type:"partial", pts:"~ +1 pt — Plausible, but premature.", text:"Vertical integration makes sense when markets persistently fail and assets are highly specific. But new suppliers have entered the market — you'd be internalising costs just as competition is restoring it." },
+        { type:"correct", pts:"✓ +3 pts — Smart move!",              text:"The arrival of new suppliers directly addresses the 'few partners' problem that drove up transaction costs. Activating market competition reduces your exposure without the overhead of vertical integration." },
+        { type:"wrong",   pts:"✗ 0 pts — This backfires.",           text:"A struggling supplier won't reliably improve under price pressure — you'd be intensifying the relationship with the source of your problem. With new alternatives available, staying put is strategically weak." }
+      ]
+    },
+    {
+      title: "The AI Analytics Contract",
+      scenario: "NovaTech has used an external AI analytics firm for three years. Their proprietary model is now deeply embedded in your reporting infrastructure — migrating away would take 9–12 months. The firm is proposing a new 5-year exclusive contract with a 40% price increase.",
+      question: "How do you assess this situation?",
+      options: [
+        { letter:"A", text:"Sign the contract — they've performed well and a long-term deal gives planning security.", points:0 },
+        { letter:"B", text:"Recognise this as a hold-up problem: deep integration has created asset specificity now being exploited. Renegotiate hard or begin parallel capability development.", points:3 },
+        { letter:"C", text:"Decline and immediately start replacing them, even at the cost of 12 months of disruption.", points:1 }
+      ],
+      feedback: [
+        { type:"wrong",   pts:"✗ 0 pts — This is the trap.",                  text:"Signing rewards the hold-up. The 40% hike is a direct consequence of the asset specificity you've allowed to build up. Accepting it without pushback sets a costly precedent." },
+        { type:"correct", pts:"✓ +3 pts — Sharp analysis!",                   text:"Classic hold-up problem. Switching costs (9–12 months) created bilateral lock-in the vendor is now exploiting. Negotiate hard using the threat of internalisation, or actually begin building internal capability." },
+        { type:"partial", pts:"~ +1 pt — Right diagnosis, costly execution.", text:"Exiting is the right direction, but an immediate switch ignores real transition costs. A phased approach — renegotiate while building alternatives — is more pragmatic." }
+      ]
+    }
+  ],
+  tiers: [
+    { min:10, cls:"expert",       icon:"◆", label:"Transaction Cost Expert",  desc:"You read the market like a textbook. Williamson would be proud." },
+    { min:5,  cls:"practitioner", icon:"▲", label:"Savvy Practitioner",        desc:"Solid instincts — a few edges to sharpen, but you have the fundamentals." },
+    { min:0,  cls:"apprentice",   icon:"●", label:"Apprentice Strategist",     desc:"Transaction costs tripped you up — but now you know where to look." }
+  ]
+};
+
+const MAX_SCORE = 12;
+const KEY = "odce_tct_v1";
+
+let S = { screen:"welcome", nickname:"", qi:0, score:0, answers:[], sel:null, revealed:false };
+
+function isHost() { return new URLSearchParams(window.location.search).has("host"); }
+function getScores() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } }
+function saveScore(n, s) {
+  const a = getScores(); a.push({nickname:n,score:s,ts:Date.now()});
+  a.sort((x,y)=>y.score-x.score);
+  localStorage.setItem(KEY, JSON.stringify(a));
+}
+function clearScores() { localStorage.removeItem(KEY); }
+
+// Circuit diagram decoration (TUHH graphic system)
+function circuitDeco() {
+  return `<svg class="circuit-deco" viewBox="0 0 200 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="155" y1="8" x2="155" y2="65" stroke="#000" stroke-width="2"/>
+    <line x1="155" y1="65" x2="195" y2="65" stroke="#000" stroke-width="2"/>
+    <circle cx="155" cy="8" r="5" fill="#000"/>
+    <circle cx="195" cy="65" r="4" fill="none" stroke="#000" stroke-width="2"/>
+    <line x1="95" y1="28" x2="95" y2="75" stroke="#000" stroke-width="2"/>
+    <line x1="95" y1="28" x2="145" y2="28" stroke="#000" stroke-width="2"/>
+    <rect x="87" y="73" width="16" height="16" stroke="#000" stroke-width="2" fill="none"/>
+    <line x1="172" y1="95" x2="172" y2="148" stroke="#000" stroke-width="2"/>
+    <circle cx="172" cy="95" r="4" fill="#000"/>
+    <line x1="35" y1="125" x2="75" y2="125" stroke="#000" stroke-width="2"/>
+    <circle cx="35" cy="125" r="4" fill="none" stroke="#000" stroke-width="2"/>
+    <line x1="55" y1="45" x2="55" y2="105" stroke="#000" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle cx="55" cy="105" r="3" fill="#000"/>
+    <line x1="120" y1="100" x2="165" y2="100" stroke="#000" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle cx="120" cy="100" r="3" fill="none" stroke="#000" stroke-width="1.5"/>
+  </svg>`;
+}
+
+// Logo wrapper — solid for formal screens, scribble for welcome
+function logoWrap(variant) {
+  const svg = variant === 'scribble' ? LOGO_SCRIBBLE : LOGO_SOLID;
+  return `<div class="logo-wrap">${svg}</div>`;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  if (isHost()) { app.innerHTML = hostHTML(); bindHost(); return; }
+  if      (S.screen==="welcome")  { app.innerHTML = welcomeHTML();  bindWelcome(); }
+  else if (S.screen==="question") { app.innerHTML = questionHTML(); bindQuestion(); }
+  else if (S.screen==="results")  { app.innerHTML = resultsHTML();  bindResults(); }
+  else if (S.screen==="lb")       { app.innerHTML = lbHTML();       bindLb(); }
+}
+
+// ── WELCOME ───────────────────────────────────────────────────────────────────
+function welcomeHTML() {
+  return `<div class="card">
+    ${circuitDeco()}
+    ${logoWrap('scribble')}
+    <div class="accent-line"></div>
+    <div class="tag">Transaction Cost Theory · Interactive Case</div>
+    <h1>${GAME.title}</h1>
+    <p class="subtitle">${GAME.intro}</p>
+    <div class="chips">
+      <div class="chip"><strong>4</strong> decisions</div>
+      <div class="chip">Max <strong>${MAX_SCORE}</strong> pts</div>
+      <div class="chip">~<strong>7</strong> min</div>
+    </div>
+    <div class="divider"></div>
+    <label class="field-label" for="nick">Your name</label>
+    <input class="input-field" id="nick" type="text" placeholder="Shown on the leaderboard" maxlength="30" autocomplete="off"/>
+    <button class="btn-primary" id="start-btn">Start Challenge →</button>
+  </div>`;
+}
+function bindWelcome() {
+  const inp = document.getElementById("nick");
+  const btn = document.getElementById("start-btn");
+  function go() {
+    const v = inp.value.trim();
+    if (!v) { inp.style.borderColor = "var(--red)"; inp.focus(); return; }
+    S = { screen:"question", nickname:v, qi:0, score:0, answers:[], sel:null, revealed:false };
+    render();
+  }
+  inp.addEventListener("keydown", e => { if(e.key==="Enter") go(); });
+  btn.addEventListener("click", go);
+}
+
+// ── QUESTION ──────────────────────────────────────────────────────────────────
+function questionHTML() {
+  const q = GAME.questions[S.qi];
+  const pct = (S.qi / GAME.questions.length) * 100;
+  const opts = q.options.map((opt, i) => {
+    let cls = "";
+    if (S.revealed) {
+      if (i===S.sel)         cls = opt.points===3?"correct":opt.points===1?"partial":"wrong";
+      else if (opt.points===3) cls = "correct";
+      else                   cls = "dimmed";
+    }
+    return `<button class="option-btn ${cls}" data-i="${i}" ${S.revealed?"disabled":""}>
+      <span class="option-letter">${opt.letter}</span>
+      <span>${opt.text}</span>
+    </button>`;
+  }).join("");
+
+  let fb = "";
+  if (S.revealed && S.sel!==null) {
+    const f = q.feedback[S.sel];
+    fb = `<div class="feedback-panel visible ${f.type}">
+      <div class="feedback-pts">${f.pts}</div>
+      <div class="feedback-text">${f.text}</div>
+    </div>`;
+  }
+  const isLast = S.qi===GAME.questions.length-1;
+  const nxt = S.revealed
+    ? `<button class="btn-primary" id="next-btn">${isLast?"See My Results →":"Next Decision →"}</button>` : "";
+
+  return `<div class="card">
+    ${circuitDeco()}
+    ${logoWrap('solid')}
+    <div class="progress-meta">
+      <span class="progress-label">Decision ${S.qi+1} of ${GAME.questions.length}</span>
+      <span class="progress-score">${S.score} pts</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="tag">Case</div>
+    <h2>${q.title}</h2>
+    <div class="scenario-box">${q.scenario}</div>
+    <div class="question-prompt">${q.question}</div>
+    <div class="options">${opts}</div>
+    ${fb}
+    ${nxt}
+  </div>`;
+}
+function bindQuestion() {
+  document.querySelectorAll(".option-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (S.revealed) return;
+      S.sel = parseInt(btn.dataset.i);
+      S.score += GAME.questions[S.qi].options[S.sel].points;
+      S.answers.push({ qi:S.qi, si:S.sel, pts:GAME.questions[S.qi].options[S.sel].points });
+      S.revealed = true;
+      render();
+    });
+  });
+  const nb = document.getElementById("next-btn");
+  if (nb) nb.addEventListener("click", () => {
+    S.qi++; S.sel=null; S.revealed=false;
+    if (S.qi>=GAME.questions.length) S.screen="results";
+    render();
+  });
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────────────────
+function resultsHTML() {
+  const tier = GAME.tiers.find(t=>S.score>=t.min);
+  const bk = S.answers.map((a,i) => {
+    const q = GAME.questions[i];
+    const ico = a.pts===3?"✓":a.pts===1?"~":"✗";
+    const col = a.pts===3?"var(--mint)":a.pts===1?"var(--yellow)":"var(--red)";
+    return `<div class="breakdown-row">
+      <span><span style="color:${col};font-weight:700;margin-right:8px;">${ico}</span>${q.title}</span>
+      <span class="breakdown-pts">${a.pts} / 3</span>
+    </div>`;
+  }).join("");
+  return `<div class="card">
+    ${circuitDeco()}
+    ${logoWrap('solid')}
+    <div class="accent-line"></div>
+    <div class="tag">Your result, ${S.nickname}</div>
+    <div class="score-display">
+      <div class="score-number">${S.score}<span class="score-denom"> /${MAX_SCORE}</span></div>
+      <div class="score-pts-label">points</div>
+    </div>
+    <div class="tier-row ${tier.cls}">
+      <div class="tier-icon" style="color:${tier.cls==='expert'?'var(--mint)':tier.cls==='practitioner'?'var(--yellow)':'var(--red)'}">${tier.icon}</div>
+      <div><div class="tier-name">${tier.label}</div><div class="tier-desc">${tier.desc}</div></div>
+    </div>
+    <div class="section-label">Decision Breakdown</div>
+    ${bk}
+    <button class="btn-primary" id="submit-btn">Submit to Leaderboard →</button>
+    <button class="btn-outline"  id="view-lb-btn">View Leaderboard</button>
+  </div>`;
+}
+function bindResults() {
+  let done=false;
+  document.getElementById("submit-btn").addEventListener("click",()=>{
+    if(!done){saveScore(S.nickname,S.score);done=true;}
+    S.screen="lb";render();
+  });
+  document.getElementById("view-lb-btn").addEventListener("click",()=>{S.screen="lb";render();});
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────────
+function lbHTML() {
+  const all=getScores();
+  const myIdx=all.findIndex(s=>s.nickname===S.nickname&&s.score===S.score);
+  const clsMap=["gold","silver","bronze"], medals=["🥇","🥈","🥉"];
+  const rows=all.slice(0,10).map((s,i)=>{
+    const isMe=i===myIdx;
+    return `<div class="lb-item ${i<3?clsMap[i]:""} ${isMe?"me":""}">
+      <div class="lb-rank">${i<3?medals[i]:`${i+1}.`}</div>
+      <div class="lb-name">${s.nickname}${isMe?` <span style="font-size:11px;color:var(--turquoise);"> ← you</span>`:""}</div>
+      <div class="lb-score">${s.score} pts</div>
+    </div>`;
+  }).join("")||`<div class="lb-empty">No entries yet.</div>`;
+  return `<div class="card">
+    ${logoWrap('solid')}
+    <div class="accent-line"></div>
+    <div class="tag">Leaderboard</div>
+    <h2>Top Results</h2>
+    ${rows}
+    <button class="btn-primary" id="again-btn">Play Again →</button>
+  </div>`;
+}
+function bindLb() {
+  document.getElementById("again-btn").addEventListener("click",()=>{
+    S={screen:"welcome",nickname:"",qi:0,score:0,answers:[],sel:null,revealed:false};render();
+  });
+}
+
+// ── HOST ──────────────────────────────────────────────────────────────────────
+function hostHTML() {
+  const all=getScores(), n=all.length;
+  const avg=n?(all.reduce((s,r)=>s+r.score,0)/n).toFixed(1):"—";
+  const top=n?all[0].score:"—";
+  const clsMap=["gold","silver","bronze"],medals=["🥇","🥈","🥉"];
+  const rows=all.slice(0,20).map((s,i)=>{
+    const t=new Date(s.ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    return `<div class="lb-item ${i<3?clsMap[i]:""}">
+      <div class="lb-rank">${i<3?medals[i]:`${i+1}.`}</div>
+      <div class="lb-name">${s.nickname}</div>
+      <div style="font-size:11px;color:#aaa;margin-right:12px;">${t}</div>
+      <div class="lb-score">${s.score} pts</div>
+    </div>`;
+  }).join("")||`<div class="lb-empty">No students have submitted yet.</div>`;
+  return `<div class="card">
+    ${logoWrap('solid')}
+    <div class="host-banner"><h2>Host Control Panel</h2><p>The Make-or-Buy Decision · Transaction Cost Theory</p></div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val">${n}</div><div class="stat-label">Done</div></div>
+      <div class="stat-box"><div class="stat-val">${avg}</div><div class="stat-label">Avg pts</div></div>
+      <div class="stat-box"><div class="stat-val">${top}</div><div class="stat-label">Top score</div></div>
+    </div>
+    <div class="host-actions">
+      <button class="host-btn" id="h-copy">📋 Copy student link</button>
+      <button class="host-btn" id="h-export">⬇ Export CSV</button>
+      <button class="host-btn" id="h-refresh">↺ Refresh</button>
+      <button class="host-btn danger" id="h-reset">✕ Reset scores</button>
+    </div>
+    <div class="section-label">Leaderboard</div>
+    ${rows}
+  </div>`;
+}
+function bindHost() {
+  document.getElementById("h-copy").addEventListener("click",()=>{
+    const url=window.location.href.replace(/[?&]host(=true)?/,"").replace(/\?$/,"");
+    navigator.clipboard.writeText(url).then(()=>{
+      const b=document.getElementById("h-copy");b.textContent="✓ Copied!";
+      setTimeout(()=>{b.textContent="📋 Copy student link";},2000);
+    });
+  });
+  document.getElementById("h-export").addEventListener("click",()=>{
+    const rows=getScores();
+    const csv=["Rank,Name,Score,Time",...rows.map((s,i)=>
+      `${i+1},"${s.nickname.replace(/"/g,'""')}",${s.score},"${new Date(s.ts).toLocaleString()}"`)].join("\n");
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+    a.download="tct-scores.csv";a.click();
+  });
+  document.getElementById("h-refresh").addEventListener("click",render);
+  document.getElementById("h-reset").addEventListener("click",()=>{
+    if(confirm("Clear all scores? This cannot be undone.")){clearScores();render();}
+  });
+}
+
+render();
+</script>
+</body>
+</html>
