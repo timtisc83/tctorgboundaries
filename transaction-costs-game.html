@@ -750,8 +750,9 @@ function bindWelcome() {
   function go() {
     const v = inp.value.trim();
     if (!v) { inp.style.borderColor = 'var(--red)'; inp.focus(); return; }
-    setState({ screen: 'scenario', nickname: v, scenarioIndex: 0, score: 0, answers: [], submitted: false, currentOptionOrder: [] });
+    Object.assign(state, { screen: 'scenario', nickname: v, scenarioIndex: 0, score: 0, answers: [], submitted: false, currentOptionOrder: [] });
     prepareScenario(0);
+    render();
   }
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   start.addEventListener('click', go);
@@ -766,7 +767,10 @@ function prepareScenario(index) {
     ...opt,
     _id: `${s.id}_${i}_${Math.random().toString(16).slice(2)}`
   }));
-  setState({ currentOptionOrder: shuffled, revealed: false, selectedOptionId: null });
+  // Mutate state directly — caller will trigger render()
+  state.currentOptionOrder = shuffled;
+  state.revealed = false;
+  state.selectedOptionId = null;
 }
 
 function renderScenario() {
@@ -862,9 +866,13 @@ function bindScenario() {
   if (next) {
     next.addEventListener('click', () => {
       const ni = state.scenarioIndex + 1;
-      if (ni >= GAME_DATA.scenarios.length) { setState({ screen: 'results' }); return; }
-      setState({ screen: 'scenario', scenarioIndex: ni, currentOptionOrder: [] });
+      if (ni >= GAME_DATA.scenarios.length) {
+        setState({ screen: 'results' });
+        return;
+      }
+      Object.assign(state, { screen: 'scenario', scenarioIndex: ni, currentOptionOrder: [] });
       prepareScenario(ni);
+      render();
     });
   }
 }
