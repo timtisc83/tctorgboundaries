@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Make-or-Buy Decision | ODCE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -15,10 +15,12 @@
       --red: #FF4F4F;
       --orange: #FF7E15;
       --yellow: #FFDE36;
+      --blush: #FFAEA2;
       --cool-gray: #D0D0CE;
+      --warm-gray: #A8968C;
       --black: #000000;
       --white: #FFFFFF;
-      --bg: #F0F9FA;
+      --bg: #F5FEFF;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,46 +32,42 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 28px 16px 56px;
+      padding: 32px 16px 64px;
       color: var(--black);
     }
 
-    #app { width: 100%; max-width: 680px; }
+    #app { width: 100%; max-width: 700px; }
 
-    /* ODCE wordmark (text-based, on every screen) */
-    .odce-mark {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      user-select: none;
+    /* ===================== ODCE LOGO ===================== */
+    .odce-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .odce-mark .odce {
-      font-size: 14px;
-      color: var(--odce-blue);
+    .odce-logo-wrap svg {
+      height: 32px;
+      width: auto;
     }
-    .odce-mark .dot {
-      width: 7px;
-      height: 7px;
-      background: var(--tuhh-turquoise);
-      display: inline-block;
-    }
-    .odce-mark .tag {
-      font-size: 10px;
-      letter-spacing: 2px;
+    .odce-logo-sub {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       color: var(--tuhh-turquoise);
-      font-weight: 700;
+      line-height: 1.2;
+      padding-left: 2px;
+      border-left: 2px solid var(--tuhh-turquoise);
+      margin-left: 4px;
     }
 
+    /* ===================== CARD ===================== */
     .card {
       background: var(--white);
-      padding: 34px 40px 40px;
+      padding: 36px 44px 44px;
       position: relative;
       overflow: hidden;
       border-top: 5px solid var(--tuhh-turquoise);
-      box-shadow: 0 4px 28px rgba(0,193,212,0.10), 0 1px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 6px 36px rgba(0,193,212,0.10), 0 1px 4px rgba(0,0,0,0.05);
     }
 
     .top-row {
@@ -77,1072 +75,1067 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+    }
+
+    .screen-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--odce-blue);
+      padding: 5px 10px;
     }
 
     .accent-line {
       height: 3px;
-      background: linear-gradient(90deg, var(--tuhh-turquoise) 55%, transparent);
-      margin-bottom: 22px;
+      background: linear-gradient(90deg, var(--tuhh-turquoise) 50%, var(--violet) 80%, transparent);
+      margin-bottom: 24px;
     }
+    .divider { height: 1px; background: var(--cool-gray); margin: 24px 0; }
 
-    .divider { height: 1px; background: var(--cool-gray); margin: 22px 0; }
-
-    h1 { font-size: 30px; font-weight: 700; line-height: 1.15; letter-spacing: -0.3px; margin-bottom: 10px; }
-    h2 { font-size: 21px; font-weight: 700; line-height: 1.25; margin-bottom: 12px; }
-    h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
-
-    .subtitle { font-size: 14px; color: #444; line-height: 1.75; margin-bottom: 22px; }
+    h1 { font-size: 32px; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 12px; }
+    h2 { font-size: 22px; font-weight: 700; line-height: 1.2; margin-bottom: 14px; }
 
     .tagline {
       display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2.5px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--tuhh-turquoise);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
-    /* Circuit / geometric deco */
-    .circuit-deco {
+    .subtitle {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    /* ===================== GEOMETRIC DECO ===================== */
+    .geo-deco {
       position: absolute;
       top: 0; right: 0;
-      width: 210px; height: 175px;
+      width: 220px; height: 185px;
       pointer-events: none;
-      opacity: 0.06;
+      opacity: 0.055;
     }
 
-    /* Chips */
-    .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
-    .chip { background: var(--bg); border: 1.5px solid var(--cool-gray); padding: 6px 14px; font-size: 12px; font-weight: 600; color: #555; }
+    /* ===================== CHIPS ===================== */
+    .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .chip {
+      background: var(--bg);
+      border: 1.5px solid var(--cool-gray);
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+    }
     .chip strong { color: var(--odce-blue); }
 
-    /* Progress */
-    .progress-meta { display:flex; justify-content: space-between; align-items:center; margin-bottom: 7px; }
-    .progress-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--tuhh-turquoise); }
-    .progress-score { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--odce-blue); }
-    .progress-track { height: 3px; background: var(--cool-gray); margin-bottom: 18px; }
-    .progress-fill { height:100%; background: var(--tuhh-turquoise); transition: width 0.35s ease; }
+    /* ===================== PROGRESS ===================== */
+    .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .progress-label { font-size: 9px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--tuhh-turquoise); }
+    .progress-score { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--odce-blue); }
+    .progress-track { height: 4px; background: var(--cool-gray); margin-bottom: 20px; position: relative; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--tuhh-turquoise), var(--odce-blue)); transition: width 0.4s ease; }
 
-    /* Scenario box */
+    /* ===================== SCENARIO BOX ===================== */
     .scenario-box {
       background: var(--bg);
       border-left: 4px solid var(--tuhh-turquoise);
-      padding: 16px 20px;
+      padding: 18px 22px;
       font-size: 14px;
       color: #333;
-      line-height: 1.75;
-      margin-bottom: 18px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      position: relative;
     }
     .scenario-box::before {
       content: 'SCENARIO';
-      display:block;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 2.5px;
+      display: block;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 3px;
       color: var(--tuhh-turquoise);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
-    .question-prompt { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+    .question-prompt {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--black);
+    }
 
-    /* Options */
-    .options { display:flex; flex-direction:column; gap: 10px; }
+    /* ===================== OPTIONS ===================== */
+    .options { display: flex; flex-direction: column; gap: 10px; }
 
     .option-btn {
       border: 2px solid var(--cool-gray);
       background: var(--white);
-      padding: 15px 18px;
+      padding: 16px 20px;
       font-family: 'Poppins', 'Segoe UI', sans-serif;
       font-size: 13.5px;
       font-weight: 500;
       color: #222;
       cursor: pointer;
       text-align: left;
-      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
       line-height: 1.55;
-      display:flex;
-      align-items:flex-start;
-      gap: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
     }
     .option-btn:hover:not(:disabled) {
       border-color: var(--tuhh-turquoise);
-      background: #f0fdfe;
-      transform: translateX(3px);
+      background: #edfbfd;
+      transform: translateX(4px);
     }
 
     .option-letter {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width: 28px;
-      height: 28px;
-      min-width: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
       border: 2px solid var(--cool-gray);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
-      color: #666;
+      color: #777;
       transition: all 0.15s;
       margin-top: 1px;
       flex-shrink: 0;
     }
-    .option-btn:hover:not(:disabled) .option-letter { border-color: var(--tuhh-turquoise); color: var(--tuhh-turquoise); }
+    .option-btn:hover:not(:disabled) .option-letter {
+      border-color: var(--tuhh-turquoise);
+      color: var(--tuhh-turquoise);
+    }
 
-    .option-btn.correct { border-color: var(--mint); background: #edfff8; }
-    .option-btn.correct .option-letter { background: var(--mint); border-color: var(--mint); color: #005a44; }
-    .option-btn.partial { border-color: var(--yellow); background: #fffce6; }
-    .option-btn.partial .option-letter { background: var(--yellow); border-color: var(--yellow); color: #6b4e00; }
-    .option-btn.wrong { border-color: var(--red); background: #fff2f2; }
-    .option-btn.wrong .option-letter { background: var(--red); border-color: var(--red); color: var(--white); }
-    .option-btn.dimmed { opacity: 0.38; }
+    /* Result states */
+    .option-btn.correct  { border-color: var(--mint); background: #edfff8; }
+    .option-btn.correct  .option-letter { background: var(--mint); border-color: var(--mint); color: #005a44; }
+    .option-btn.partial  { border-color: var(--yellow); background: #fffce6; }
+    .option-btn.partial  .option-letter { background: var(--yellow); border-color: var(--yellow); color: #6b4e00; }
+    .option-btn.wrong    { border-color: var(--red); background: #fff2f2; }
+    .option-btn.wrong    .option-letter { background: var(--red); border-color: var(--red); color: var(--white); }
+    .option-btn.dimmed   { opacity: 0.32; }
     .option-btn:disabled { cursor: default; transform: none !important; }
 
-    /* Feedback panel */
-    .feedback-panel { margin-top: 18px; padding: 16px 20px; border-left: 4px solid var(--tuhh-turquoise); background: var(--bg); display:none; }
-    .feedback-panel.visible { display:block; }
-    .feedback-panel.correct { border-color: var(--mint); }
-    .feedback-panel.partial { border-color: var(--yellow); }
-    .feedback-panel.wrong { border-color: var(--red); }
-    .feedback-pts { font-size: 15px; font-weight: 800; margin-bottom: 5px; }
+    /* ===================== FEEDBACK PANEL ===================== */
+    .feedback-panel {
+      margin-top: 20px;
+      padding: 18px 22px;
+      border-left: 5px solid var(--tuhh-turquoise);
+      background: var(--bg);
+      display: none;
+    }
+    .feedback-panel.visible { display: block; }
+    .feedback-panel.correct { border-color: var(--mint); background: #edfff8; }
+    .feedback-panel.partial { border-color: var(--yellow); background: #fffce6; }
+    .feedback-panel.wrong   { border-color: var(--red); background: #fff2f2; }
+
+    .feedback-pts { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
     .feedback-panel.correct .feedback-pts { color: #00704a; }
     .feedback-panel.partial .feedback-pts { color: #7a5e00; }
-    .feedback-panel.wrong .feedback-pts { color: #a00; }
-    .feedback-text { font-size: 13px; color: #444; line-height: 1.7; }
+    .feedback-panel.wrong   .feedback-pts { color: #a00; }
+    .feedback-text { font-size: 13px; color: #444; line-height: 1.75; }
 
-    /* Inputs */
+    /* ===================== FORM INPUTS ===================== */
     .field-label {
-      display:block;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
       text-transform: uppercase;
       color: #555;
-      margin-bottom: 6px;
-      margin-top: 18px;
+      margin-bottom: 7px;
+      margin-top: 20px;
     }
     .input-field {
       width: 100%;
       border: 2px solid var(--cool-gray);
       background: var(--white);
-      padding: 14px 16px;
+      padding: 14px 18px;
       font-family: 'Poppins', 'Segoe UI', sans-serif;
       font-size: 14px;
       outline: none;
       transition: border-color 0.15s;
+      color: var(--black);
     }
     .input-field:focus { border-color: var(--tuhh-turquoise); }
 
-    /* Buttons */
+    /* ===================== BUTTONS ===================== */
     .btn-primary {
-      display:block;
-      width:100%;
-      margin-top: 18px;
+      display: block;
+      width: 100%;
+      margin-top: 20px;
       background: var(--tuhh-turquoise);
       color: var(--white);
-      border:none;
-      padding: 16px 28px;
+      border: none;
+      padding: 17px 28px;
       font-family: 'Poppins', 'Segoe UI', sans-serif;
       font-size: 14px;
       font-weight: 800;
-      cursor:pointer;
+      cursor: pointer;
       letter-spacing: 0.5px;
       transition: background 0.15s, transform 0.1s;
-      text-align:center;
+      text-align: center;
     }
-    .btn-primary:hover { background: #009fb0; transform: translateY(-1px); }
+    .btn-primary:hover { background: #009fb0; transform: translateY(-2px); }
+    .btn-primary:disabled { background: var(--cool-gray); cursor: default; transform: none; }
 
     .btn-outline {
-      display:block;
-      width:100%;
+      display: block;
+      width: 100%;
       margin-top: 10px;
       background: transparent;
       color: var(--odce-blue);
       border: 2px solid var(--odce-blue);
-      padding: 14px 28px;
+      padding: 15px 28px;
       font-family: 'Poppins', 'Segoe UI', sans-serif;
       font-size: 14px;
       font-weight: 800;
-      cursor:pointer;
+      cursor: pointer;
       letter-spacing: 0.5px;
       transition: all 0.15s;
-      text-align:center;
+      text-align: center;
     }
     .btn-outline:hover { background: var(--odce-blue); color: var(--white); }
 
-    /* Results */
-    .score-display { text-align:center; padding: 22px 0 16px; border-bottom: 1px solid var(--cool-gray); margin-bottom: 20px; }
-    .score-number { font-size: 72px; font-weight: 800; color: var(--odce-blue); line-height: 1; }
-    .score-denom { font-size: 24px; font-weight: 300; color: var(--cool-gray); }
-    .score-pts-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #888; text-transform: uppercase; margin-top: 4px; }
+    /* ===================== RESULTS ===================== */
+    .score-display {
+      text-align: center;
+      padding: 26px 0 20px;
+      border-bottom: 1px solid var(--cool-gray);
+      margin-bottom: 22px;
+    }
+    .score-number { font-size: 80px; font-weight: 800; color: var(--odce-blue); line-height: 1; }
+    .score-denom { font-size: 28px; font-weight: 300; color: var(--cool-gray); }
+    .score-pts-label { font-size: 10px; font-weight: 800; letter-spacing: 2.5px; color: #888; text-transform: uppercase; margin-top: 6px; }
 
-    .tier-row { display:flex; align-items:center; gap: 14px; padding: 16px 18px; border-left: 5px solid var(--tuhh-turquoise); background: var(--bg); margin-bottom: 20px; }
-    .tier-row.expert { border-color: var(--mint); }
-    .tier-row.practitioner { border-color: var(--yellow); }
-    .tier-row.apprentice { border-color: var(--red); }
-    .tier-icon { font-size: 24px; line-height: 1; }
-    .tier-name { font-size: 15px; font-weight: 800; }
-    .tier-desc { font-size: 13px; color: #555; margin-top: 2px; }
+    .tier-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      border-left: 5px solid var(--tuhh-turquoise);
+      background: var(--bg);
+      margin-bottom: 22px;
+    }
+    .tier-row.expert      { border-color: var(--mint); background: #edfff8; }
+    .tier-row.practitioner{ border-color: var(--yellow); background: #fffce6; }
+    .tier-row.apprentice  { border-color: var(--red); background: #fff2f2; }
+    .tier-icon { font-size: 26px; line-height: 1; }
+    .tier-name { font-size: 16px; font-weight: 800; }
+    .tier-desc { font-size: 13px; color: #555; margin-top: 3px; }
 
-    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--tuhh-turquoise); margin-bottom: 10px; }
+    .section-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--tuhh-turquoise);
+      margin-bottom: 12px;
+      margin-top: 4px;
+    }
 
-    .breakdown-row { display:flex; align-items:center; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 13px; gap: 12px; }
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+      gap: 12px;
+    }
     .breakdown-pts { font-weight: 800; color: var(--odce-blue); white-space: nowrap; }
 
-    /* Leaderboard */
-    .lb-item { display:flex; align-items:center; padding: 12px 16px; border-left: 4px solid transparent; margin-bottom: 6px; background: var(--bg); font-size: 14px; }
-    .lb-item.gold { border-color: var(--yellow); background: #fffce6; }
+    /* ===================== LEADERBOARD ===================== */
+    .lb-item {
+      display: flex;
+      align-items: center;
+      padding: 13px 18px;
+      border-left: 4px solid transparent;
+      margin-bottom: 7px;
+      background: var(--bg);
+      font-size: 14px;
+      transition: background 0.12s;
+    }
+    .lb-item.gold   { border-color: var(--yellow); background: #fffce6; }
     .lb-item.silver { border-color: var(--cool-gray); }
     .lb-item.bronze { border-color: var(--orange); background: #fff5ed; }
-    .lb-item.me { border-color: var(--tuhh-turquoise); background: #f0fdfe; }
-    .lb-rank { width: 32px; font-weight: 800; color: #888; flex-shrink: 0; }
-    .lb-name { flex:1; font-weight: 700; overflow:hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-item.me     { border-color: var(--tuhh-turquoise); background: #edfbfd; }
+    .lb-rank  { width: 34px; font-weight: 800; color: #888; flex-shrink: 0; }
+    .lb-name  { flex: 1; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .lb-score { font-weight: 800; color: var(--odce-blue); white-space: nowrap; }
-    .lb-empty { color: #aaa; font-size: 13px; padding: 20px 0; text-align: center; }
+    .lb-you   { font-size: 10px; color: var(--tuhh-turquoise); font-weight: 800; margin-left: 6px; }
+    .lb-empty { color: #aaa; font-size: 13px; padding: 24px 0; text-align: center; }
 
-    /* Host */
-    .host-banner { background: var(--odce-blue); color: var(--white); padding: 18px 22px; margin-bottom: 18px; }
-    .host-banner h2 { color: var(--white); font-size: 18px; margin-bottom: 2px; }
-    .host-banner p { font-size: 12px; opacity: 0.75; letter-spacing: 0.5px; }
+    /* live pulse */
+    .live-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--mint);
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
 
-    .stat-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
-    .stat-box { background: var(--white); border-top: 3px solid var(--tuhh-turquoise); padding: 14px 12px; text-align: center; }
-    .stat-val { font-size: 28px; font-weight: 800; color: var(--odce-blue); }
-    .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-top: 2px; }
+    /* ===================== HOST PANEL ===================== */
+    .host-banner {
+      background: var(--odce-blue);
+      color: var(--white);
+      padding: 20px 26px;
+      margin-bottom: 20px;
+    }
+    .host-banner h2 { color: var(--white); font-size: 20px; margin-bottom: 3px; }
+    .host-banner p  { font-size: 11px; opacity: 0.7; letter-spacing: 0.5px; }
 
-    .host-actions { display:grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
-    .host-btn { background: var(--bg); border: 2px solid var(--cool-gray); padding: 10px 14px; font-family: 'Poppins','Segoe UI',sans-serif; font-size: 12px; font-weight: 700; cursor:pointer; color:#333; transition: all 0.15s; text-align:center; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-box { background: var(--white); border-top: 3px solid var(--tuhh-turquoise); padding: 16px 12px; text-align: center; }
+    .stat-val { font-size: 32px; font-weight: 800; color: var(--odce-blue); }
+    .stat-label { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-top: 3px; }
+
+    .host-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .host-btn {
+      background: var(--bg);
+      border: 2px solid var(--cool-gray);
+      padding: 12px 16px;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #333;
+      transition: all 0.15s;
+      text-align: center;
+    }
     .host-btn:hover { background: var(--tuhh-turquoise); color: var(--white); border-color: var(--tuhh-turquoise); }
     .host-btn.danger:hover { background: var(--red); border-color: var(--red); color: var(--white); }
 
-    @media (max-width: 480px) {
-      .card { padding: 22px 18px 26px; }
-      h1 { font-size: 24px; }
-      .score-number { font-size: 56px; }
+    /* status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      text-transform: uppercase;
+    }
+    .status-badge.live   { background: var(--mint); color: #004d35; }
+    .status-badge.local  { background: var(--yellow); color: #5a4000; }
+
+    /* ===================== RESPONSIVE ===================== */
+    @media (max-width: 520px) {
+      .card { padding: 22px 18px 30px; }
+      h1 { font-size: 26px; }
+      .score-number { font-size: 60px; }
       .stat-grid { grid-template-columns: 1fr; }
       .host-actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div id="app"></div>
-
-  <script>
-    // =============================================================
-    // GAME DATA (edit content here)
-    // =============================================================
-    const GAME_DATA = {
-      title: "The Make-or-Buy Decision",
-      subtitle: "Transaction Cost Theory",
-      institution: "ODCE · TUHH",
-      intro: "You're the Head of Innovation at NovaTech GmbH. Your CEO has put four critical sourcing decisions on your desk — each one tests your ability to read transaction costs correctly. Choose wisely.",
-      scenarios: [
-        {
-          id: 1,
-          title: "The Standard Software Module",
-          situation:
-            "NovaTech needs a new inventory management module. It's a standard solution — dozens of SaaS vendors offer virtually identical products, integration is straightforward, and contract terms are short. Your dev team is busy with core product work.",
-          question: "What do you recommend?",
-          options: [
-            {
-              text:
-                "Buy off-the-shelf from one of the established vendors — low specificity, many partners, minimal uncertainty.",
-              points: 3,
-              feedback:
-                "Textbook low-cost transaction: non-specific goods, many exchange partners, low uncertainty. Buying is optimal — no need for vertical integration."
-            },
-            {
-              text:
-                "Build it in-house to keep full control and avoid vendor lock-in.",
-              points: 0,
-              feedback:
-                "In-house development only makes sense when assets are highly specific or few partners exist. Here, the market offers plenty of identical alternatives — building wastes resources."
-            },
-            {
-              text:
-                "Start a long-term exclusive partnership with one vendor to get a custom version.",
-              points: 1,
-              feedback:
-                "A long-term exclusive deal introduces bilateral dependency where none is needed. It raises transaction costs unnecessarily."
-            }
-          ]
-        },
-        {
-          id: 2,
-          title: "The Proprietary Sensor",
-          situation:
-            "NovaTech is developing a breakthrough IoT device that needs a custom-engineered sensor — one that embeds your proprietary calibration algorithm. Only two vendors in Europe have the engineering capabilities. Once the relationship starts, both sides must make significant dedicated investments.",
-          question: "How do you structure this?",
-          options: [
-            {
-              text:
-                "Outsource to the cheaper of the two vendors on a short-term contract — keep it flexible.",
-              points: 0,
-              feedback:
-                "Short-term contracts with high asset specificity create hold-up risks. After dedicated investments, either side can exploit the other. You need safeguards, not flexibility."
-            },
-            {
-              text:
-                "Develop the sensor in-house or form a long-term structured partnership with tight safeguards.",
-              points: 3,
-              feedback:
-                "High asset specificity + few partners + uncertainty = high transaction costs. Internalise or use tight long-term contracts with safeguards — exactly what TCT prescribes."
-            },
-            {
-              text:
-                "Let the two vendors compete in an open bid each year to keep prices down.",
-              points: 1,
-              feedback:
-                "Annual bidding assumes a competitive market. With only two qualified vendors and high switching costs, you gain little real leverage."
-            }
-          ]
-        },
-        {
-          id: 3,
-          title: "The Supply Chain Crisis",
-          situation:
-            "A critical component supplier has become unreliable after a geopolitical shock. Lead times tripled, quality is inconsistent, and three alternative suppliers have entered the market in the past year. Your procurement team is overwhelmed with firefighting.",
-          question: "What's your strategic response?",
-          options: [
-            {
-              text:
-                "Immediately pursue vertical integration — acquire or build the capability in-house to eliminate external dependency.",
-              points: 1,
-              feedback:
-                "Vertical integration can help when markets persistently fail and assets are highly specific. But new suppliers are entering — internalising now may be premature."
-            },
-            {
-              text:
-                "Qualify one or two of the new suppliers and shift volume — use the newly competitive market.",
-              points: 3,
-              feedback:
-                "New entrants address the 'few partners' problem that drove up transaction costs. Market competition reduces exposure without the overhead of integration."
-            },
-            {
-              text:
-                "Stay with the current supplier but renegotiate aggressively for price concessions.",
-              points: 0,
-              feedback:
-                "A struggling supplier rarely improves under price pressure alone. With new alternatives available, staying put is strategically weak."
-            }
-          ]
-        },
-        {
-          id: 4,
-          title: "The AI Analytics Contract",
-          situation:
-            "NovaTech has used an external AI analytics firm for three years. Their proprietary model is now deeply embedded in your reporting infrastructure — migrating away would take 9–12 months. The firm proposes a new 5-year exclusive contract with a 40% price increase.",
-          question: "How do you assess this situation?",
-          options: [
-            {
-              text:
-                "Sign the contract — they've performed well and a long-term deal gives planning security.",
-              points: 0,
-              feedback:
-                "Signing rewards a hold-up. The price hike is a consequence of asset specificity and switching costs. Accepting without pushback sets a costly precedent."
-            },
-            {
-              text:
-                "Recognise hold-up: deep integration created asset specificity now exploited. Renegotiate hard and/or build a parallel capability.",
-              points: 3,
-              feedback:
-                "Classic hold-up. Switching costs created lock-in the vendor is exploiting. Negotiate using a credible threat of internalisation, or actually begin building an alternative."
-            },
-            {
-              text:
-                "Decline and immediately start replacing them, even at the cost of 12 months of disruption.",
-              points: 1,
-              feedback:
-                "Exiting is directionally right, but an immediate switch ignores transition costs. A phased plan (renegotiate while building alternatives) is more pragmatic."
-            }
-          ]
-        }
-      ],
-      scoring: {
-        max: 12,
-        tiers: [
-          {
-            min: 10,
-            cls: "expert",
-            icon: "◆",
-            label: "Transaction Cost Expert",
-            desc: "You read the market like a textbook. Williamson would be proud."
-          },
-          {
-            min: 5,
-            cls: "practitioner",
-            icon: "▲",
-            label: "Savvy Practitioner",
-            desc: "Solid instincts — a few edges to sharpen, but you have the fundamentals."
-          },
-          {
-            min: 0,
-            cls: "apprentice",
-            icon: "●",
-            label: "Apprentice Strategist",
-            desc: "Transaction costs tripped you up — but now you know where to look."
-          }
-        ]
-      }
-    };
-
-
-    // =============================================================
-    // Supabase (real-time shared leaderboard)
-    // =============================================================
-    const SUPABASE_URL = 'https://uyynxszpmtwfxmnwirjn.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_urtblTmp0Y9ikKCBm-Forg_azXo9iQ6';
-    const GAME_KEY = `odce_game_${GAME_DATA.title.replace(/\s+/g, '_').toLowerCase()}`;
-
-    const db = (window.supabase && window.supabase.createClient)
-      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-      : null;
-
-    async function supaSubmitScore(nickname, score) {
-      if (!db) throw new Error('Supabase client not available');
-      const { error } = await db.from('scores').insert({ game_key: GAME_KEY, nickname, score });
-      if (error) throw error;
+<div id="app"></div>
+<script>
+// ================================================================
+// GAME DATA
+// ================================================================
+const GAME_DATA = {
+  title: "The Make-or-Buy Decision",
+  subtitle: "Transaction Cost Theory",
+  institution: "ODCE · TUHH",
+  intro: "You're the Head of Innovation at NovaTech GmbH. Your CEO has put four critical sourcing decisions on your desk — each one tests your ability to read transaction costs correctly. Choose wisely.",
+  scenarios: [
+    {
+      id: 1,
+      title: "The Standard Software Module",
+      situation: "NovaTech needs a new inventory management module. It's a standard solution — dozens of SaaS vendors offer virtually identical products, integration is straightforward, and contract terms are short. Your dev team is busy with core product work.",
+      question: "What do you recommend?",
+      options: [
+        { text: "Buy off-the-shelf from one of the established vendors — low specificity, many partners, minimal uncertainty.", points: 3, feedback: "Textbook low-cost transaction: non-specific goods, many exchange partners, low uncertainty. Buying is optimal — no need for vertical integration." },
+        { text: "Build it in-house to keep full control and avoid vendor lock-in.", points: 0, feedback: "In-house development only makes sense when assets are highly specific or few partners exist. Here, the market offers plenty of identical alternatives — building wastes resources." },
+        { text: "Start a long-term exclusive partnership with one vendor to get a custom version.", points: 1, feedback: "A long-term exclusive deal introduces bilateral dependency where none is needed. It raises transaction costs unnecessarily." }
+      ]
+    },
+    {
+      id: 2,
+      title: "The Proprietary Sensor",
+      situation: "NovaTech is developing a breakthrough IoT device that needs a custom-engineered sensor — one that embeds your proprietary calibration algorithm. Only two vendors in Europe have the engineering capabilities. Once the relationship starts, both sides must make significant dedicated investments.",
+      question: "How do you structure this?",
+      options: [
+        { text: "Outsource to the cheaper of the two vendors on a short-term contract — keep it flexible.", points: 0, feedback: "Short-term contracts with high asset specificity create hold-up risks. After dedicated investments, either side can exploit the other. You need safeguards, not flexibility." },
+        { text: "Develop the sensor in-house or form a long-term structured partnership with tight safeguards.", points: 3, feedback: "High asset specificity + few partners + uncertainty = high transaction costs. Internalise or use tight long-term contracts with safeguards — exactly what TCT prescribes." },
+        { text: "Let the two vendors compete in an open bid each year to keep prices down.", points: 1, feedback: "Annual bidding assumes a competitive market. With only two qualified vendors and high switching costs, you gain little real leverage." }
+      ]
+    },
+    {
+      id: 3,
+      title: "The Supply Chain Crisis",
+      situation: "A critical component supplier has become unreliable after a geopolitical shock. Lead times tripled, quality is inconsistent, and three alternative suppliers have entered the market in the past year. Your procurement team is overwhelmed with firefighting.",
+      question: "What's your strategic response?",
+      options: [
+        { text: "Immediately pursue vertical integration — acquire or build the capability in-house to eliminate external dependency.", points: 1, feedback: "Vertical integration can help when markets persistently fail and assets are highly specific. But new suppliers are entering — internalising now may be premature." },
+        { text: "Qualify one or two of the new suppliers and shift volume — use the newly competitive market.", points: 3, feedback: "New entrants address the 'few partners' problem that drove up transaction costs. Market competition reduces exposure without the overhead of integration." },
+        { text: "Stay with the current supplier but renegotiate aggressively for price concessions.", points: 0, feedback: "A struggling supplier rarely improves under price pressure alone. With new alternatives available, staying put is strategically weak." }
+      ]
+    },
+    {
+      id: 4,
+      title: "The AI Analytics Contract",
+      situation: "NovaTech has used an external AI analytics firm for three years. Their proprietary model is now deeply embedded in your reporting infrastructure — migrating away would take 9–12 months. The firm proposes a new 5-year exclusive contract with a 40% price increase.",
+      question: "How do you assess this situation?",
+      options: [
+        { text: "Sign the contract — they've performed well and a long-term deal gives planning security.", points: 0, feedback: "Signing rewards a hold-up. The price hike is a consequence of asset specificity and switching costs. Accepting without pushback sets a costly precedent." },
+        { text: "Recognise hold-up: deep integration created asset specificity now exploited. Renegotiate hard and/or build a parallel capability.", points: 3, feedback: "Classic hold-up. Switching costs created lock-in the vendor is exploiting. Negotiate using a credible threat of internalisation, or actually begin building an alternative." },
+        { text: "Decline and immediately start replacing them, even at the cost of 12 months of disruption.", points: 1, feedback: "Exiting is directionally right, but an immediate switch ignores transition costs. A phased plan (renegotiate while building alternatives) is more pragmatic." }
+      ]
     }
-
-    async function supaFetchScores() {
-      if (!db) throw new Error('Supabase client not available');
-      const { data, error } = await db
-        .from('scores')
-        .select('*')
-        .eq('game_key', GAME_KEY)
-        .order('score', { ascending: false })
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      return data || [];
-    }
-
-    function supaListenForScores(onUpdate) {
-      if (!db) return () => {};
-      let cancelled = false;
-
-      // initial load
-      supaFetchScores().then(rows => { if (!cancelled) onUpdate(rows); }).catch(() => {});
-
-      const channel = db
-        .channel('scores-channel-' + GAME_KEY)
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'scores',
-          filter: `game_key=eq.${GAME_KEY}`
-        }, async () => {
-          try {
-            const rows = await supaFetchScores();
-            if (!cancelled) onUpdate(rows);
-          } catch {}
-        })
-        .subscribe();
-
-      return () => {
-        cancelled = true;
-        try { db.removeChannel(channel); } catch {}
-      };
-    }
-
-    async function supaResetScores() {
-      if (!db) throw new Error('Supabase client not available');
-      const { error } = await db.from('scores').delete().eq('game_key', GAME_KEY);
-      if (error) throw error;
-    }
-
-    // =============================================================
-    // Persistence (localStorage)
-    // =============================================================
-    const STORAGE_KEY = `odce_game_${GAME_DATA.title.replace(/\s+/g, '_').toLowerCase()}_scores`;
-
-    function getScores() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveScore(nickname, score) {
-      const scores = getScores();
-      scores.push({ nickname, score, timestamp: Date.now() });
-      scores.sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
-    }
-
-    function resetScores() {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    // =============================================================
-    // Utilities
-    // =============================================================
-    function isHost() {
-      const p = new URLSearchParams(window.location.search);
-      return p.get('host') === 'true' || p.has('host');
-    }
-
-    // Fisher-Yates shuffle (on a copy)
-    function shuffleCopy(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-
-    function circuitDeco() {
-      return `
-        <svg class="circuit-deco" viewBox="0 0 200 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <line x1="155" y1="8" x2="155" y2="65" stroke="#000" stroke-width="2"/>
-          <line x1="155" y1="65" x2="195" y2="65" stroke="#000" stroke-width="2"/>
-          <circle cx="155" cy="8" r="5" fill="#000"/>
-          <circle cx="195" cy="65" r="4" fill="none" stroke="#000" stroke-width="2"/>
-          <line x1="95" y1="28" x2="95" y2="75" stroke="#000" stroke-width="2"/>
-          <line x1="95" y1="28" x2="145" y2="28" stroke="#000" stroke-width="2"/>
-          <rect x="87" y="73" width="16" height="16" stroke="#000" stroke-width="2" fill="none"/>
-          <line x1="172" y1="95" x2="172" y2="148" stroke="#000" stroke-width="2"/>
-          <circle cx="172" cy="95" r="4" fill="#000"/>
-          <line x1="35" y1="125" x2="75" y2="125" stroke="#000" stroke-width="2"/>
-          <circle cx="35" cy="125" r="4" fill="none" stroke="#000" stroke-width="2"/>
-          <line x1="55" y1="45" x2="55" y2="105" stroke="#000" stroke-width="1.5" stroke-dasharray="4 4"/>
-          <circle cx="55" cy="105" r="3" fill="#000"/>
-          <line x1="120" y1="100" x2="165" y2="100" stroke="#000" stroke-width="1.5" stroke-dasharray="3 3"/>
-          <circle cx="120" cy="100" r="3" fill="none" stroke="#000" stroke-width="1.5"/>
-        </svg>
-      `;
-    }
-
-    function odceMark() {
-      return `
-        <div class="odce-mark" aria-label="ODCE TUHH">
-          <span class="odce">ODCE</span>
-          <span class="dot" aria-hidden="true"></span>
-          <span class="tag">TUHH</span>
-        </div>
-      `;
-    }
-
-    // =============================================================
-    // State machine
-    // =============================================================
-    const state = {
-      screen: 'welcome', // welcome | scenario | results | leaderboard | host
-      scenarioIndex: 0,
-      score: 0,
-      nickname: '',
-      answers: [],
-      revealed: false,
-      selectedOptionId: null,
-      currentOptionOrder: []
-    };
-
-    function setState(updates) {
-      Object.assign(state, updates);
-      render();
-    }
-
-    // =============================================================
-    // Rendering
-    // =============================================================
-    function render() {
-      const app = document.getElementById('app');
-
-      if (isHost()) {
-        renderHost().then(h => { app.innerHTML = h; bindHost(); });
-        return;
-      }
-
-      switch (state.screen) {
-        case 'welcome':
-          app.innerHTML = renderWelcome();
-          bindWelcome();
-          break;
-        case 'scenario':
-          app.innerHTML = renderScenario();
-          bindScenario();
-          break;
-        case 'results':
-          app.innerHTML = renderResults();
-          bindResults();
-          break;
-        case 'leaderboard':
-          renderLeaderboard().then(h => { app.innerHTML = h; bindLeaderboard(); });
-          break;
-        default:
-          app.innerHTML = renderWelcome();
-          bindWelcome();
-      }
-    }
-
-    function renderWelcome() {
-      const max = GAME_DATA.scoring.max;
-      const mins = Math.max(5, Math.round(GAME_DATA.scenarios.length * 1.75));
-      return `
-        <div class="card">
-          ${circuitDeco()}
-          <div class="top-row">
-            ${odceMark()}
-            <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--odce-blue);">Interactive Case</div>
-          </div>
-          <div class="accent-line"></div>
-          <div class="tagline">${GAME_DATA.subtitle} · Challenge</div>
-          <h1>${GAME_DATA.title}</h1>
-          <p class="subtitle">${GAME_DATA.intro}</p>
-          <div class="chips">
-            <div class="chip"><strong>${GAME_DATA.scenarios.length}</strong> decisions</div>
-            <div class="chip">Max <strong>${max}</strong> pts</div>
-            <div class="chip">~<strong>${mins}</strong> min</div>
-          </div>
-          <div class="divider"></div>
-          <label class="field-label" for="nick">Your name</label>
-          <input class="input-field" id="nick" type="text" placeholder="Shown on the leaderboard" maxlength="30" autocomplete="off" />
-          <button class="btn-primary" id="start-btn">Start Challenge →</button>
-          <button class="btn-outline" id="view-lb-btn">View Leaderboard</button>
-        </div>
-      `;
-    }
-
-    function prepareScenario(index) {
-      const s = GAME_DATA.scenarios[index];
-      const shuffled = shuffleCopy(s.options).map((opt, idx) => ({
-        ...opt,
-        _id: `${s.id}_${idx}_${Math.random().toString(16).slice(2)}`
-      }));
-      setState({
-        currentOptionOrder: shuffled,
-        revealed: false,
-        selectedOptionId: null
-      });
-    }
-
-    function renderScenario() {
-      const s = GAME_DATA.scenarios[state.scenarioIndex];
-      const progress = state.scenarioIndex + 1;
-      const total = GAME_DATA.scenarios.length;
-      const pct = ((progress - 1) / total) * 100;
-
-      // Ensure we have an option order for this render
-      if (!state.currentOptionOrder || state.currentOptionOrder.length === 0) {
-        // NOTE: render() is sync; we can't setState() here without recursion.
-        // So we fall back to a direct shuffle (no state write) for first paint.
-        state.currentOptionOrder = shuffleCopy(s.options).map((opt, idx) => ({
-          ...opt,
-          _id: `${s.id}_${idx}_${Math.random().toString(16).slice(2)}`
-        }));
-      }
-
-      const opts = state.currentOptionOrder
-        .map((opt, i) => {
-          const letter = String.fromCharCode(65 + i);
-          let cls = "";
-          if (state.revealed) {
-            if (opt._id === state.selectedOptionId) {
-              cls = opt.points === 3 ? 'correct' : opt.points === 1 ? 'partial' : 'wrong';
-            } else if (opt.points === 3) {
-              cls = 'correct';
-            } else {
-              cls = 'dimmed';
-            }
-          }
-          return `
-            <button class="option-btn ${cls}" data-optid="${opt._id}" ${state.revealed ? 'disabled' : ''}>
-              <span class="option-letter">${letter}</span>
-              <span>${opt.text}</span>
-            </button>
-          `;
-        })
-        .join('');
-
-      let fb = "";
-      if (state.revealed && state.selectedOptionId) {
-        const chosen = state.currentOptionOrder.find(o => o._id === state.selectedOptionId);
-        const type = chosen.points === 3 ? 'correct' : chosen.points === 1 ? 'partial' : 'wrong';
-        const ptsText = chosen.points === 3 ? '✓ +3 pts — Great call.' : chosen.points === 1 ? '~ +1 pt — Defensible, but.' : '✗ 0 pts — Not quite.';
-        fb = `
-          <div class="feedback-panel visible ${type}">
-            <div class="feedback-pts">${ptsText}</div>
-            <div class="feedback-text">${chosen.feedback}</div>
-          </div>
-        `;
-      }
-
-      const isLast = state.scenarioIndex === total - 1;
-      const nextBtn = state.revealed
-        ? `<button class="btn-primary" id="next-btn">${isLast ? 'See My Results →' : 'Next Decision →'}</button>`
-        : '';
-
-      return `
-        <div class="card">
-          ${circuitDeco()}
-          <div class="top-row">
-            ${odceMark()}
-            <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--tuhh-turquoise);">${GAME_DATA.subtitle}</div>
-          </div>
-          <div class="progress-meta">
-            <span class="progress-label">Decision ${progress} of ${total}</span>
-            <span class="progress-score">${state.score} pts</span>
-          </div>
-          <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-
-          <div class="tagline">Case</div>
-          <h2>${s.title}</h2>
-          <div class="scenario-box">${s.situation}</div>
-          <div class="question-prompt">${s.question}</div>
-
-          <div class="options">${opts}</div>
-          ${fb}
-          ${nextBtn}
-        </div>
-      `;
-    }
-
-    function renderResults() {
-      const max = GAME_DATA.scoring.max;
-      const tier = GAME_DATA.scoring.tiers.find(t => state.score >= t.min);
-
-      const bk = state.answers
-        .map((a) => {
-          const s = GAME_DATA.scenarios.find(sc => sc.id === a.scenarioId);
-          const ico = a.points === 3 ? '✓' : a.points === 1 ? '~' : '✗';
-          const col = a.points === 3 ? 'var(--mint)' : a.points === 1 ? 'var(--yellow)' : 'var(--red)';
-          return `
-            <div class="breakdown-row">
-              <span><span style="color:${col};font-weight:800;margin-right:8px;">${ico}</span>${s.title}</span>
-              <span class="breakdown-pts">${a.points} / 3</span>
-            </div>
-          `;
-        })
-        .join('');
-
-      const tierColor = tier.cls === 'expert' ? 'var(--mint)' : tier.cls === 'practitioner' ? 'var(--yellow)' : 'var(--red)';
-
-      return `
-        <div class="card">
-          ${circuitDeco()}
-          <div class="top-row">
-            ${odceMark()}
-            <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--odce-blue);">Results</div>
-          </div>
-          <div class="accent-line"></div>
-          <div class="tagline">Your result, ${escapeHtml(state.nickname)}</div>
-
-          <div class="score-display">
-            <div class="score-number">${state.score}<span class="score-denom"> /${max}</span></div>
-            <div class="score-pts-label">points</div>
-          </div>
-
-          <div class="tier-row ${tier.cls}">
-            <div class="tier-icon" style="color:${tierColor}">${tier.icon}</div>
-            <div>
-              <div class="tier-name">${tier.label}</div>
-              <div class="tier-desc">${tier.desc}</div>
-            </div>
-          </div>
-
-          <div class="section-label">Decision Breakdown</div>
-          ${bk}
-
-          <button class="btn-primary" id="submit-btn">Submit to Leaderboard →</button>
-          <button class="btn-outline" id="view-lb-btn">View Leaderboard</button>
-          <button class="btn-outline" id="play-again-btn">Play Again</button>
-        </div>
-      `;
-    }
-
-    async function renderLeaderboard() {
-      const all = await getScores();
-      const sorted = all.slice().sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
-
-      // Find "me" entry (most recent matching)
-      let myIdx = -1;
-      for (let i = 0; i < sorted.length; i++) {
-        if (sorted[i].nickname === state.nickname && sorted[i].score === state.score) {
-          myIdx = i;
-          break;
-        }
-      }
-
-      const clsMap = ['gold', 'silver', 'bronze'];
-      const medals = ['🥇', '🥈', '🥉'];
-
-      const rows = sorted
-        .slice(0, 10)
-        .map((s, i) => {
-          const isMe = i === myIdx;
-          return `
-            <div class="lb-item ${i < 3 ? clsMap[i] : ''} ${isMe ? 'me' : ''}">
-              <div class="lb-rank">${i < 3 ? medals[i] : `${i + 1}.`}</div>
-              <div class="lb-name">${escapeHtml(s.nickname)}${isMe ? ' <span style="font-size:11px;color:var(--tuhh-turquoise);">← you</span>' : ''}</div>
-              <div class="lb-score">${s.score} pts</div>
-            </div>
-          `;
-        })
-        .join('') || `<div class="lb-empty">No entries yet.</div>`;
-
-      return `
-        <div class="card">
-          ${circuitDeco()}
-          <div class="top-row">
-            ${odceMark()}
-            <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--tuhh-turquoise);">Leaderboard</div>
-          </div>
-          <div class="accent-line"></div>
-          <div class="tagline">Top Results</div>
-          <h2>${GAME_DATA.title}</h2>
-          ${rows}
-          <button class="btn-primary" id="again-btn">Play Again →</button>
-        </div>
-      `;
-    }
-
-    async function renderHost() {
-      const all = await getScores();
-      const sorted = all.slice().sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
-      const n = sorted.length;
-      const avg = n ? (sorted.reduce((sum, r) => sum + r.score, 0) / n).toFixed(1) : '—';
-      const top = n ? sorted[0].score : '—';
-
-      const clsMap = ['gold', 'silver', 'bronze'];
-      const medals = ['🥇', '🥈', '🥉'];
-
-      const rows = sorted
-        .slice(0, 20)
-        .map((s, i) => {
-          const t = new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          return `
-            <div class="lb-item ${i < 3 ? clsMap[i] : ''}">
-              <div class="lb-rank">${i < 3 ? medals[i] : `${i + 1}.`}</div>
-              <div class="lb-name">${escapeHtml(s.nickname)}</div>
-              <div style="font-size:11px;color:#aaa;margin-right:12px;">${t}</div>
-              <div class="lb-score">${s.score} pts</div>
-            </div>
-          `;
-        })
-        .join('') || `<div class="lb-empty">No students have submitted yet.</div>`;
-
-      return `
-        <div class="card">
-          <div class="top-row">
-            ${odceMark()}
-            <div style="font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color: var(--white); background: var(--odce-blue); padding: 6px 10px;">Host</div>
-          </div>
-
-          <div class="host-banner">
-            <h2>Host Control Panel</h2>
-            <p>${GAME_DATA.title} · ${GAME_DATA.subtitle}</p>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat-box"><div class="stat-val">${n}</div><div class="stat-label">Done</div></div>
-            <div class="stat-box"><div class="stat-val">${avg}</div><div class="stat-label">Avg pts</div></div>
-            <div class="stat-box"><div class="stat-val">${top}</div><div class="stat-label">Top score</div></div>
-          </div>
-
-          <div class="host-actions">
-            <button class="host-btn" id="h-copy">📋 Copy student link</button>
-            <button class="host-btn" id="h-export">⬇ Export CSV</button>
-            <button class="host-btn" id="h-refresh">↺ Refresh</button>
-            <button class="host-btn danger" id="h-reset">✕ Reset scores</button>
-          </div>
-
-          <div class="section-label">Leaderboard</div>
-          ${rows}
-        </div>
-      `;
-    }
-
-    // =============================================================
-    // Bindings
-    // =============================================================
-    function bindWelcome() {
-      const inp = document.getElementById('nick');
-      const start = document.getElementById('start-btn');
-      const viewLb = document.getElementById('view-lb-btn');
-
-      function go() {
-        const v = inp.value.trim();
-        if (!v) {
-          inp.style.borderColor = 'var(--red)';
-          inp.focus();
-          return;
-        }
-        // init game
-        setState({
-          screen: 'scenario',
-          nickname: v,
-          scenarioIndex: 0,
-          score: 0,
-          answers: [],
-          currentOptionOrder: []
-        });
-        prepareScenario(0);
-      }
-
-      inp.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') go();
-      });
-      start.addEventListener('click', go);
-      viewLb.addEventListener('click', () => setState({ screen: 'leaderboard' }));
-    }
-
-    function bindScenario() {
-      document.querySelectorAll('.option-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          if (state.revealed) return;
-          const optId = btn.dataset.optid;
-          const chosen = state.currentOptionOrder.find(o => o._id === optId);
-
-          setState({
-            selectedOptionId: optId,
-            revealed: true,
-            score: state.score + chosen.points,
-            answers: state.answers.concat([
-              {
-                scenarioId: GAME_DATA.scenarios[state.scenarioIndex].id,
-                points: chosen.points
-              }
-            ])
-          });
-        });
-      });
-
-      const next = document.getElementById('next-btn');
-      if (next) {
-        next.addEventListener('click', () => {
-          const nextIndex = state.scenarioIndex + 1;
-          if (nextIndex >= GAME_DATA.scenarios.length) {
-            setState({ screen: 'results' });
-            return;
-          }
-          setState({ screen: 'scenario', scenarioIndex: nextIndex, currentOptionOrder: [] });
-          prepareScenario(nextIndex);
-        });
-      }
-    }
-
-    function bindResults() {
-      const submit = document.getElementById('submit-btn');
-      const viewLb = document.getElementById('view-lb-btn');
-      const again = document.getElementById('play-again-btn');
-
-      submit.addEventListener('click', async () => {
-        // Save once per click; duplicates are acceptable but annoying.
-        // We'll disable the button after saving.
-        await saveScore(state.nickname, state.score);
-        submit.textContent = '✓ Submitted';
-        submit.disabled = true;
-        setTimeout(() => setState({ screen: 'leaderboard' }), 250);
-      });
-
-      viewLb.addEventListener('click', () => setState({ screen: 'leaderboard' }));
-
-      again.addEventListener('click', () => {
-        setState({
-          screen: 'welcome',
-          scenarioIndex: 0,
-          score: 0,
-          answers: [],
-          revealed: false,
-          selectedOptionId: null,
-          currentOptionOrder: []
-        });
-      });
-    }
-
-    function bindLeaderboard() {
-      document.getElementById('again-btn').addEventListener('click', () => {
-        setState({
-          screen: 'welcome',
-          nickname: '',
-          scenarioIndex: 0,
-          score: 0,
-          answers: [],
-          revealed: false,
-          selectedOptionId: null,
-          currentOptionOrder: []
-        });
-      });
-    }
-
-    let __hostUnsub = null;
-    function bindHost() {
-      if (!__hostUnsub && db) {
-        __hostUnsub = supaListenForScores(() => {
-          render();
-        });
-      }
-      document.getElementById('h-copy').addEventListener('click', async () => {
-        const url = window.location.href.replace(/[?&]host(=true)?/, '').replace(/\?$/, '');
-        try {
-          await navigator.clipboard.writeText(url);
-          const b = document.getElementById('h-copy');
-          b.textContent = '✓ Copied!';
-          setTimeout(() => (b.textContent = '📋 Copy student link'), 2000);
-        } catch {
-          alert('Could not copy automatically. Student link:\n\n' + url);
-        }
-      });
-
-      document.getElementById('h-export').addEventListener('click', async () => {
-        const rows = (await getScores()).slice().sort((a, b) => b.score - a.score || a.timestamp - b.timestamp);
-        const csv = [
-          ['Rank', 'Name', 'Score', 'Max', 'Timestamp'].join(','),
-          ...rows.map((s, i) => {
-            const ts = new Date(s.timestamp).toLocaleString();
-            const name = String(s.nickname).replace(/"/g, '""');
-            return `${i + 1},"${name}",${s.score},${GAME_DATA.scoring.max},"${ts}"`;
-          })
-        ].join('\n');
-
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = `${GAME_DATA.title.replace(/\s+/g, '_')}_scores.csv`;
-        a.click();
-      });
-
-      document.getElementById('h-refresh').addEventListener('click', render);
-
-      document.getElementById('h-reset').addEventListener('click', () => {
-        if (confirm('Clear all scores? This cannot be undone.')) {
-          resetScores().then(() => render());
-        }
-      });
-    }
-
-    function escapeHtml(s) {
-      return String(s)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      if (isHost()) {
-        // host render path
-        render();
+  ],
+  scoring: {
+    max: 12,
+    tiers: [
+      { min: 10, cls: "expert",       icon: "◆", label: "Transaction Cost Expert",  desc: "You read the market like a textbook. Williamson would be proud." },
+      { min: 5,  cls: "practitioner", icon: "▲", label: "Savvy Practitioner",        desc: "Solid instincts — a few edges to sharpen, but you have the fundamentals." },
+      { min: 0,  cls: "apprentice",   icon: "●", label: "Apprentice Strategist",     desc: "Transaction costs tripped you up — but now you know where to look." }
+    ]
+  }
+};
+
+// ================================================================
+// SUPABASE CONFIG — replace with your credentials
+// ================================================================
+const SUPABASE_URL     = 'https://uyynxszpmtwfxmnwirjn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_urtblTmp0Y9ikKCBm-Forg_azXo9iQ6';
+const GAME_KEY = `odce_game_${GAME_DATA.title.replace(/\s+/g,'_').toLowerCase()}`;
+
+const db = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ================================================================
+// SUPABASE HELPERS
+// ================================================================
+async function supaSubmitScore(nickname, score) {
+  if (!db) throw new Error('Supabase unavailable');
+  const { error } = await db.from('scores').insert({ game_key: GAME_KEY, nickname, score });
+  if (error) throw error;
+}
+
+async function supaFetchScores() {
+  if (!db) throw new Error('Supabase unavailable');
+  const { data, error } = await db
+    .from('scores').select('*')
+    .eq('game_key', GAME_KEY)
+    .order('score', { ascending: false })
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+let __lbChannel = null;
+function supaListen(onUpdate) {
+  if (!db) return () => {};
+  let cancelled = false;
+  supaFetchScores().then(r => { if (!cancelled) onUpdate(r); }).catch(() => {});
+  __lbChannel = db.channel('lb-' + GAME_KEY)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'scores', filter: `game_key=eq.${GAME_KEY}` },
+        async () => { try { const r = await supaFetchScores(); if (!cancelled) onUpdate(r); } catch {} })
+    .subscribe();
+  return () => { cancelled = true; try { db.removeChannel(__lbChannel); } catch {} };
+}
+
+async function supaReset() {
+  if (!db) throw new Error('Supabase unavailable');
+  const { error } = await db.from('scores').delete().eq('game_key', GAME_KEY);
+  if (error) throw error;
+}
+
+// ================================================================
+// FALLBACK: localStorage (used when Supabase fails)
+// ================================================================
+const LS_KEY = `odce_game_${GAME_DATA.title.replace(/\s+/g,'_').toLowerCase()}_scores`;
+
+function lsGetScores() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; } }
+function lsSaveScore(n, s) {
+  const arr = lsGetScores();
+  arr.push({ nickname: n, score: s, created_at: new Date().toISOString() });
+  arr.sort((a,b) => b.score - a.score || a.created_at.localeCompare(b.created_at));
+  localStorage.setItem(LS_KEY, JSON.stringify(arr));
+}
+function lsReset() { localStorage.removeItem(LS_KEY); }
+
+// ================================================================
+// UNIFIED PERSISTENCE
+// ================================================================
+let useSupabase = !!db;
+
+async function persistScore(nickname, score) {
+  if (useSupabase) {
+    try { await supaSubmitScore(nickname, score); return; } catch { useSupabase = false; }
+  }
+  lsSaveScore(nickname, score);
+}
+
+async function fetchScores() {
+  if (useSupabase) {
+    try { return await supaFetchScores(); } catch { useSupabase = false; }
+  }
+  return lsGetScores();
+}
+
+async function resetAll() {
+  if (useSupabase) {
+    try { await supaReset(); return; } catch {}
+  }
+  lsReset();
+}
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function isHost() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('host') === 'true' || p.has('host');
+}
+
+function shuffleCopy(arr) {
+  const a = arr.slice();
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ================================================================
+// ODCE LOGO (inline SVG — solid variant)
+// ================================================================
+function odceLogo() {
+  return `
+  <div class="odce-logo-wrap">
+    <svg width="96.605103mm" height="82.199448mm" viewBox="0 0 96.605103 82.199448" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-label="ODCE Logo">
+      <g transform="translate(117.23172,-149.41432)">
+        <path style="fill:none;fill-opacity:1;stroke:#143aff;stroke-width:1.5875;stroke-linecap:round;stroke-linejoin:round;"
+          d="m -116.43796,230.55898 59.621691,0.26104 h 6.8089 l 27.00638,-23.65599 v -50.64865 l -38.93207,0.22247 -54.504901,21.22023 z"/>
+        <g aria-label="ODCE" style="font-weight:bold;font-size:19.7556px;font-family:'BC Novatica TEST','Poppins',sans-serif;fill:#143aff;">
+          <path d="m -102.06223,223.39662 c 4.504274,0 7.270058,-2.6275 7.270058,-7.32933 0,-4.70183 -2.765784,-7.32933 -7.270058,-7.32933 -4.52404,0 -7.28982,2.6275 -7.28982,7.32933 0,4.70183 2.76578,7.32933 7.28982,7.32933 z m 0,-3.14114 c -2.23239,0 -3.65479,-1.56069 -3.65479,-4.18819 0,-2.62749 1.4224,-4.18819 3.65479,-4.18819 2.212624,0 3.635027,1.5607 3.635027,4.18819 0,2.6275 -1.422403,4.18819 -3.635027,4.18819 z"/>
+          <path d="m -93.783207,223.12004 h 6.183503 c 3.753564,0 6.795927,-1.89654 6.795927,-7.05275 0,-5.15621 -3.042363,-7.05275 -6.795927,-7.05275 h -6.183503 z m 5.294501,-3.12138 h -1.857026 v -7.86273 h 1.857026 c 3.239919,0 4.049898,1.34338 4.049898,3.93136 0,2.58799 -0.809979,3.93137 -4.049898,3.93137 z"/>
+          <path d="m -73.05818,223.39662 c 3.101629,0 6.440326,-1.81752 6.637882,-5.84766 h -3.654786 c -0.217312,1.85703 -1.698982,2.70652 -2.983096,2.70652 -2.15336,0 -3.496741,-1.44216 -3.496741,-4.20794 0,-2.72628 1.343381,-4.16844 3.496741,-4.16844 1.284114,0 2.78554,0.82974 2.983096,2.70652 h 3.654786 c -0.197556,-4.0499 -3.536253,-5.84766 -6.637882,-5.84766 -4.286965,0 -7.131771,2.54848 -7.131771,7.30958 0,4.80061 2.844806,7.34908 7.131771,7.34908 z"/>
+          <path d="m -65.411352,223.12004 h 10.806313 v -3.12138 h -7.368838 v -2.37068 h 6.381058 v -3.12138 h -6.381058 v -2.37067 h 7.27006 v -3.12139 h -10.707535 z"/>
+        </g>
+      </g>
+    </svg>
+    <div class="odce-logo-sub">TUHH<br>Institut für<br>Organisationsdesign</div>
+  </div>`;
+}
+
+// ================================================================
+// GEOMETRIC DECORATIVE SVG (circuit/construction drawing style)
+// ================================================================
+function geoDeco() {
+  return `
+  <svg class="geo-deco" viewBox="0 0 220 185" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <line x1="160" y1="5" x2="160" y2="70" stroke="#000" stroke-width="2"/>
+    <line x1="160" y1="70" x2="210" y2="70" stroke="#000" stroke-width="2"/>
+    <circle cx="160" cy="5" r="5" fill="#000"/>
+    <circle cx="210" cy="70" r="4" fill="none" stroke="#000" stroke-width="2"/>
+    <rect x="150" y="95" width="18" height="18" stroke="#000" stroke-width="2" fill="none"/>
+    <line x1="100" y1="25" x2="100" y2="80" stroke="#000" stroke-width="2"/>
+    <line x1="100" y1="25" x2="150" y2="25" stroke="#000" stroke-width="2"/>
+    <circle cx="100" cy="80" r="3" fill="#000"/>
+    <line x1="40" y1="120" x2="80" y2="120" stroke="#000" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle cx="40" cy="120" r="4" fill="none" stroke="#000" stroke-width="1.5"/>
+    <line x1="175" y1="110" x2="175" y2="160" stroke="#000" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle cx="175" cy="110" r="3" fill="#000"/>
+    <line x1="60" y1="45" x2="60" y2="100" stroke="#000" stroke-width="1.5"/>
+    <circle cx="60" cy="45" r="4" fill="none" stroke="#000" stroke-width="1.5"/>
+    <rect x="130" y="140" width="12" height="12" fill="#000"/>
+    <line x1="80" y1="155" x2="128" y2="155" stroke="#000" stroke-width="1.5"/>
+    <circle cx="80" cy="155" r="3" fill="#000"/>
+    <line x1="195" y1="35" x2="210" y2="35" stroke="#000" stroke-width="2"/>
+    <line x1="195" y1="35" x2="195" y2="55" stroke="#000" stroke-width="2"/>
+    <circle cx="195" cy="55" r="3" fill="none" stroke="#000" stroke-width="2"/>
+  </svg>`;
+}
+
+// ================================================================
+// STATE
+// ================================================================
+const state = {
+  screen: 'welcome',
+  scenarioIndex: 0,
+  score: 0,
+  nickname: '',
+  answers: [],
+  revealed: false,
+  selectedOptionId: null,
+  currentOptionOrder: [],
+  submitted: false
+};
+
+function setState(updates) {
+  Object.assign(state, updates);
+  render();
+}
+
+// ================================================================
+// RENDER DISPATCH
+// ================================================================
+function render() {
+  const app = document.getElementById('app');
+  if (isHost()) {
+    renderHost().then(h => { app.innerHTML = h; bindHost(); });
+    return;
+  }
+  switch (state.screen) {
+    case 'welcome':     app.innerHTML = renderWelcome();   bindWelcome();     break;
+    case 'scenario':    app.innerHTML = renderScenario();  bindScenario();    break;
+    case 'results':     app.innerHTML = renderResults();   bindResults();     break;
+    case 'leaderboard': renderLeaderboard().then(h => { app.innerHTML = h; bindLeaderboard(); }); break;
+    default:            app.innerHTML = renderWelcome();   bindWelcome();
+  }
+}
+
+// ================================================================
+// WELCOME SCREEN
+// ================================================================
+function renderWelcome() {
+  const mins = Math.max(5, Math.round(GAME_DATA.scenarios.length * 1.75));
+  return `
+  <div class="card">
+    ${geoDeco()}
+    <div class="top-row">
+      ${odceLogo()}
+      <div class="screen-label">Interactive Case</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="tagline">${GAME_DATA.subtitle} · Challenge</div>
+    <h1>${GAME_DATA.title}</h1>
+    <p class="subtitle">${GAME_DATA.intro}</p>
+    <div class="chips">
+      <div class="chip"><strong>${GAME_DATA.scenarios.length}</strong> decisions</div>
+      <div class="chip">Max <strong>${GAME_DATA.scoring.max}</strong> pts</div>
+      <div class="chip">~<strong>${mins}</strong> min</div>
+      <div class="chip"><span class="live-dot"></span><strong>Live</strong> leaderboard</div>
+    </div>
+    <div class="divider"></div>
+    <label class="field-label" for="nick">Your name</label>
+    <input class="input-field" id="nick" type="text" placeholder="Shown on the leaderboard" maxlength="30" autocomplete="off" />
+    <button class="btn-primary" id="start-btn">Start Challenge →</button>
+    <button class="btn-outline" id="view-lb-btn">View Leaderboard</button>
+  </div>`;
+}
+
+function bindWelcome() {
+  const inp = document.getElementById('nick');
+  const start = document.getElementById('start-btn');
+  document.getElementById('view-lb-btn').addEventListener('click', () => setState({ screen: 'leaderboard' }));
+
+  function go() {
+    const v = inp.value.trim();
+    if (!v) { inp.style.borderColor = 'var(--red)'; inp.focus(); return; }
+    setState({ screen: 'scenario', nickname: v, scenarioIndex: 0, score: 0, answers: [], submitted: false, currentOptionOrder: [] });
+    prepareScenario(0);
+  }
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  start.addEventListener('click', go);
+}
+
+// ================================================================
+// SCENARIO SCREEN
+// ================================================================
+function prepareScenario(index) {
+  const s = GAME_DATA.scenarios[index];
+  const shuffled = shuffleCopy(s.options).map((opt, i) => ({
+    ...opt,
+    _id: `${s.id}_${i}_${Math.random().toString(16).slice(2)}`
+  }));
+  setState({ currentOptionOrder: shuffled, revealed: false, selectedOptionId: null });
+}
+
+function renderScenario() {
+  const s = GAME_DATA.scenarios[state.scenarioIndex];
+  const progress = state.scenarioIndex + 1;
+  const total = GAME_DATA.scenarios.length;
+  const pct = ((progress - 1) / total) * 100;
+
+  if (!state.currentOptionOrder.length) {
+    state.currentOptionOrder = shuffleCopy(s.options).map((opt, i) => ({
+      ...opt,
+      _id: `${s.id}_${i}_${Math.random().toString(16).slice(2)}`
+    }));
+  }
+
+  const opts = state.currentOptionOrder.map((opt, i) => {
+    const letter = String.fromCharCode(65 + i);
+    let cls = '';
+    if (state.revealed) {
+      if (opt._id === state.selectedOptionId) {
+        cls = opt.points === 3 ? 'correct' : opt.points === 1 ? 'partial' : 'wrong';
+      } else if (opt.points === 3) {
+        cls = 'correct';
       } else {
-        setState({ screen: 'welcome' });
+        cls = 'dimmed';
       }
+    }
+    return `
+    <button class="option-btn ${cls}" data-optid="${opt._id}" ${state.revealed ? 'disabled' : ''}>
+      <span class="option-letter">${letter}</span>
+      <span>${opt.text}</span>
+    </button>`;
+  }).join('');
+
+  let fb = '';
+  if (state.revealed && state.selectedOptionId) {
+    const chosen = state.currentOptionOrder.find(o => o._id === state.selectedOptionId);
+    const type = chosen.points === 3 ? 'correct' : chosen.points === 1 ? 'partial' : 'wrong';
+    const ptsText = chosen.points === 3
+      ? '✓ +3 pts — Great call.'
+      : chosen.points === 1
+        ? '~ +1 pt — Defensible, but not optimal.'
+        : '✗ 0 pts — Not quite.';
+    fb = `
+    <div class="feedback-panel visible ${type}">
+      <div class="feedback-pts">${ptsText}</div>
+      <div class="feedback-text">${chosen.feedback}</div>
+    </div>`;
+  }
+
+  const isLast = state.scenarioIndex === total - 1;
+  const nextBtn = state.revealed
+    ? `<button class="btn-primary" id="next-btn">${isLast ? 'See My Results →' : 'Next Decision →'}</button>`
+    : '';
+
+  return `
+  <div class="card">
+    ${geoDeco()}
+    <div class="top-row">
+      ${odceLogo()}
+      <div class="screen-label">${GAME_DATA.subtitle}</div>
+    </div>
+    <div class="progress-meta">
+      <span class="progress-label">Decision ${progress} of ${total}</span>
+      <span class="progress-score">${state.score} pts</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="tagline">Case ${progress}</div>
+    <h2>${s.title}</h2>
+    <div class="scenario-box">${s.situation}</div>
+    <div class="question-prompt">${s.question}</div>
+    <div class="options">${opts}</div>
+    ${fb}
+    ${nextBtn}
+  </div>`;
+}
+
+function bindScenario() {
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (state.revealed) return;
+      const optId = btn.dataset.optid;
+      const chosen = state.currentOptionOrder.find(o => o._id === optId);
+      setState({
+        selectedOptionId: optId,
+        revealed: true,
+        score: state.score + chosen.points,
+        answers: state.answers.concat([{ scenarioId: GAME_DATA.scenarios[state.scenarioIndex].id, points: chosen.points }])
+      });
     });
-  </script>
+  });
+  const next = document.getElementById('next-btn');
+  if (next) {
+    next.addEventListener('click', () => {
+      const ni = state.scenarioIndex + 1;
+      if (ni >= GAME_DATA.scenarios.length) { setState({ screen: 'results' }); return; }
+      setState({ screen: 'scenario', scenarioIndex: ni, currentOptionOrder: [] });
+      prepareScenario(ni);
+    });
+  }
+}
 
-  <!--
-    🚀 How to deploy in 3 steps:
-    1. Create a new GitHub repository (can be private or public)
-    2. Upload this file as `game.html` to the repository root
-    3. Go to Settings → Pages → Source: main branch → Save
+// ================================================================
+// RESULTS SCREEN
+// ================================================================
+function renderResults() {
+  const max = GAME_DATA.scoring.max;
+  const tier = GAME_DATA.scoring.tiers.find(t => state.score >= t.min);
+  const bk = state.answers.map(a => {
+    const sc = GAME_DATA.scenarios.find(s => s.id === a.scenarioId);
+    const ico = a.points === 3 ? '✓' : a.points === 1 ? '~' : '✗';
+    const col = a.points === 3 ? 'var(--mint)' : a.points === 1 ? 'var(--yellow)' : 'var(--red)';
+    return `
+    <div class="breakdown-row">
+      <span><span style="color:${col};font-weight:800;margin-right:8px;">${ico}</span>${sc.title}</span>
+      <span class="breakdown-pts">${a.points} / 3</span>
+    </div>`;
+  }).join('');
 
-    Your links:
-    - Student link: https://[your-username].github.io/[repo-name]/game.html
-    - Host panel:   https://[your-username].github.io/[repo-name]/game.html?host=true
+  return `
+  <div class="card">
+    ${geoDeco()}
+    <div class="top-row">
+      ${odceLogo()}
+      <div class="screen-label">Results</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="tagline">Your result, ${escapeHtml(state.nickname)}</div>
+    <div class="score-display">
+      <div class="score-number">${state.score}<span class="score-denom"> /${max}</span></div>
+      <div class="score-pts-label">points</div>
+    </div>
+    <div class="tier-row ${tier.cls}">
+      <div class="tier-icon">${tier.icon}</div>
+      <div>
+        <div class="tier-name">${tier.label}</div>
+        <div class="tier-desc">${tier.desc}</div>
+      </div>
+    </div>
+    <div class="section-label">Decision Breakdown</div>
+    ${bk}
+    <button class="btn-primary" id="submit-btn">${state.submitted ? '✓ Submitted' : 'Submit to Leaderboard →'}</button>
+    <button class="btn-outline" id="view-lb-btn">View Leaderboard</button>
+    <button class="btn-outline" id="play-again-btn">Play Again</button>
+  </div>`;
+}
 
-    Want real-time leaderboard sync (scores appear on your panel as students finish)?
-    Ask me to add Supabase — it takes ~10 minutes to set up and is free.
-  -->
+function bindResults() {
+  const submitBtn = document.getElementById('submit-btn');
+  document.getElementById('view-lb-btn').addEventListener('click', () => setState({ screen: 'leaderboard' }));
+  document.getElementById('play-again-btn').addEventListener('click', () => {
+    setState({ screen: 'welcome', scenarioIndex: 0, score: 0, answers: [], revealed: false, selectedOptionId: null, currentOptionOrder: [], submitted: false });
+  });
+
+  if (state.submitted) {
+    submitBtn.disabled = true;
+    return;
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    try {
+      await persistScore(state.nickname, state.score);
+      state.submitted = true;
+      submitBtn.textContent = '✓ Submitted';
+      setTimeout(() => setState({ screen: 'leaderboard' }), 500);
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit to Leaderboard →';
+      alert('Could not submit score. Please try again.');
+    }
+  });
+}
+
+// ================================================================
+// LEADERBOARD SCREEN
+// ================================================================
+async function renderLeaderboard() {
+  let rows;
+  try { rows = await fetchScores(); } catch { rows = []; }
+  rows = rows.slice().sort((a,b) => b.score - a.score || (a.created_at||'').localeCompare(b.created_at||''));
+
+  let myIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].nickname === state.nickname && rows[i].score === state.score) { myIdx = i; break; }
+  }
+
+  const clsMap = ['gold','silver','bronze'];
+  const medals = ['🥇','🥈','🥉'];
+  const liveBadge = useSupabase
+    ? `<span class="status-badge live"><span class="live-dot"></span>Live sync</span>`
+    : `<span class="status-badge local">Local only</span>`;
+
+  const rowsHtml = rows.slice(0,10).map((r,i) => {
+    const isMe = i === myIdx;
+    return `
+    <div class="lb-item ${i < 3 ? clsMap[i] : ''} ${isMe ? 'me' : ''}">
+      <div class="lb-rank">${i < 3 ? medals[i] : `${i+1}.`}</div>
+      <div class="lb-name">${escapeHtml(r.nickname)}${isMe ? '<span class="lb-you">← you</span>' : ''}</div>
+      <div class="lb-score">${r.score} pts</div>
+    </div>`;
+  }).join('') || `<div class="lb-empty">No entries yet.</div>`;
+
+  return `
+  <div class="card">
+    ${geoDeco()}
+    <div class="top-row">
+      ${odceLogo()}
+      <div class="screen-label">Leaderboard</div>
+    </div>
+    <div class="accent-line"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div>
+        <div class="tagline">Top Results</div>
+        <h2 style="margin-bottom:0;">${GAME_DATA.title}</h2>
+      </div>
+      ${liveBadge}
+    </div>
+    ${rowsHtml}
+    <button class="btn-primary" id="again-btn">Play Again →</button>
+    <button class="btn-outline" id="back-results-btn">Back to Results</button>
+  </div>`;
+}
+
+let __lbUnsub = null;
+function bindLeaderboard() {
+  document.getElementById('again-btn').addEventListener('click', () => {
+    setState({ screen: 'welcome', nickname: '', scenarioIndex: 0, score: 0, answers: [], revealed: false, selectedOptionId: null, currentOptionOrder: [], submitted: false });
+  });
+  const backBtn = document.getElementById('back-results-btn');
+  if (backBtn) backBtn.addEventListener('click', () => setState({ screen: 'results' }));
+
+  // live update
+  if (__lbUnsub) { try { __lbUnsub(); } catch {} }
+  if (useSupabase && db) {
+    __lbUnsub = supaListen(() => {
+      if (state.screen === 'leaderboard') render();
+    });
+  }
+}
+
+// ================================================================
+// HOST PANEL
+// ================================================================
+async function renderHost() {
+  let rows;
+  try { rows = await fetchScores(); } catch { rows = []; }
+  rows = rows.slice().sort((a,b) => b.score - a.score || (a.created_at||'').localeCompare(b.created_at||''));
+  const n   = rows.length;
+  const avg = n ? (rows.reduce((s,r) => s+r.score, 0)/n).toFixed(1) : '—';
+  const top = n ? rows[0].score : '—';
+
+  const clsMap = ['gold','silver','bronze'];
+  const medals = ['🥇','🥈','🥉'];
+  const liveBadge = useSupabase
+    ? `<span class="status-badge live"><span class="live-dot"></span>Live · Supabase</span>`
+    : `<span class="status-badge local">Local storage only</span>`;
+
+  const rowsHtml = rows.slice(0,20).map((r,i) => {
+    const t = r.created_at ? new Date(r.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    return `
+    <div class="lb-item ${i < 3 ? clsMap[i] : ''}">
+      <div class="lb-rank">${i < 3 ? medals[i] : `${i+1}.`}</div>
+      <div class="lb-name">${escapeHtml(r.nickname)}</div>
+      <div style="font-size:10px;color:#aaa;margin-right:14px;">${t}</div>
+      <div class="lb-score">${r.score} pts</div>
+    </div>`;
+  }).join('') || `<div class="lb-empty">No students have submitted yet.</div>`;
+
+  return `
+  <div class="card">
+    <div class="top-row">
+      ${odceLogo()}
+      ${liveBadge}
+    </div>
+    <div class="host-banner">
+      <h2>🎛 Host Control Panel</h2>
+      <p>${GAME_DATA.title} · ${GAME_DATA.subtitle}</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val">${n}</div><div class="stat-label">Submitted</div></div>
+      <div class="stat-box"><div class="stat-val">${avg}</div><div class="stat-label">Avg pts</div></div>
+      <div class="stat-box"><div class="stat-val">${top}</div><div class="stat-label">Top score</div></div>
+    </div>
+    <div class="host-actions">
+      <button class="host-btn" id="h-copy">📋 Copy student link</button>
+      <button class="host-btn" id="h-export">⬇ Export CSV</button>
+      <button class="host-btn" id="h-refresh">↺ Refresh now</button>
+      <button class="host-btn danger" id="h-reset">✕ Reset all scores</button>
+    </div>
+    <div class="section-label">Leaderboard</div>
+    ${rowsHtml}
+  </div>`;
+}
+
+let __hostUnsub = null;
+function bindHost() {
+  // real-time for host
+  if (!__hostUnsub && useSupabase && db) {
+    __hostUnsub = supaListen(() => { if (isHost()) render(); });
+  }
+
+  document.getElementById('h-copy').addEventListener('click', async () => {
+    const url = window.location.href.replace(/[?#].*/,'');
+    try {
+      await navigator.clipboard.writeText(url);
+      const b = document.getElementById('h-copy');
+      b.textContent = '✓ Copied!';
+      setTimeout(()=>b.textContent='📋 Copy student link', 2000);
+    } catch { alert('Student link:\n\n' + url); }
+  });
+
+  document.getElementById('h-export').addEventListener('click', async () => {
+    const rows = (await fetchScores()).slice().sort((a,b) => b.score-a.score || (a.created_at||'').localeCompare(b.created_at||''));
+    const csv = [
+      ['Rank','Name','Score','Max','Timestamp'].join(','),
+      ...rows.map((r,i) => {
+        const ts = r.created_at ? new Date(r.created_at).toLocaleString() : '';
+        const nm = String(r.nickname).replace(/"/g,'""');
+        return `${i+1},"${nm}",${r.score},${GAME_DATA.scoring.max},"${ts}"`;
+      })
+    ].join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    a.download = `${GAME_DATA.title.replace(/\s+/g,'_')}_scores.csv`;
+    a.click();
+  });
+
+  document.getElementById('h-refresh').addEventListener('click', render);
+
+  document.getElementById('h-reset').addEventListener('click', () => {
+    if (confirm('Clear ALL scores? This cannot be undone.')) {
+      resetAll().then(render).catch(()=>alert('Reset failed.'));
+    }
+  });
+}
+
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (isHost()) { render(); return; }
+  setState({ screen: 'welcome' });
+});
+</script>
+
+<!--
+🚀 DEPLOYMENT — 3 STEPS:
+1. Create a new GitHub repository
+2. Upload this file as `game.html` to the repository root
+3. Settings → Pages → Source: main branch → Save
+
+🔗 LINKS:
+   Student:  https://[username].github.io/[repo]/game.html
+   Host:     https://[username].github.io/[repo]/game.html?host=true
+
+📊 SUPABASE TABLE (run once in SQL Editor):
+   create table scores (
+     id uuid default gen_random_uuid() primary key,
+     game_key text not null,
+     nickname text not null,
+     score integer not null,
+     created_at timestamptz default now()
+   );
+   alter table scores enable row level security;
+   create policy "Public read"   on scores for select using (true);
+   create policy "Public insert" on scores for insert with check (true);
+   create policy "Public delete" on scores for delete using (true);
+-->
 </body>
 </html>
